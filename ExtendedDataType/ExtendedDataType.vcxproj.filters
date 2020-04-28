@@ -21,10 +21,10 @@
     <ClCompile Include="source\BitArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\BitIOStream.cpp">
+    <ClCompile Include="source\Bit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Bit.cpp">
+    <ClCompile Include="StringMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClInclude Include="include\BitArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BitIOStream.h">
+    <ClInclude Include="include\Bit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Bit.h">
+    <ClInclude Include="StringMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

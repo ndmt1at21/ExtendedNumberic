@@ -20,9 +20,10 @@ Bit::~Bit()
 
 }
 
-Bit Bit::operator=(const Bit& bit)
+Bit& Bit::operator=(const Bit& bit)
 {
 	m_bBit = bit.m_bBit;
+	return *this;
 }
 
 Bit Bit::add(const Bit& bit, Bit& carry)
@@ -66,7 +67,9 @@ Bit Bit::operator^(const Bit& bit) const
 
 Bit Bit::operator~()
 {
-	return (~m_bBit);
+	if (isBit0())
+		return 1;
+	return 0;
 }
 
 bool Bit::isBit0()

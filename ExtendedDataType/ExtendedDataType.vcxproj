@@ -22,12 +22,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\Bit.cpp" />
     <ClCompile Include="source\BitArray.cpp" />
-    <ClCompile Include="source\BitIOStream.cpp" />
+    <ClCompile Include="StringMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Bit.h" />
     <ClInclude Include="include\BitArray.h" />
-    <ClInclude Include="include\BitIOStream.h" />
+    <ClInclude Include="StringMath.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

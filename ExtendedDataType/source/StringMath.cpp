@@ -10,12 +10,12 @@ StringMath::StringMath(const std::string& longNumber)
 
 StringMath::StringMath(const char* longNumber) :StringMath(std::string(longNumber))
 {
- 
+
 }
 
 StringMath::StringMath(const StringMath& strMath)
 {
-	m_sLongNumber = strMath.m_sLongNumber;
+    m_sLongNumber = strMath.m_sLongNumber;
 }
 
 StringMath StringMath::operator*(const StringMath& rhs)
@@ -167,7 +167,7 @@ std::string StringMath::normalize(const std::string longNumber)
 
     // Erase space
     result.erase(std::remove_if(result.begin(), result.end(), std::isspace), result.end());
-   
+
     // Check position "-"
     if (result.find("-", 0) > 0 && result.find("-", 0) < result.size())
         throw std::logic_error("Error format");

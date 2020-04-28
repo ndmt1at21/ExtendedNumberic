@@ -19,15 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Convert.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\Bit.cpp" />
     <ClCompile Include="source\BitArray.cpp" />
-    <ClCompile Include="StringMath.cpp" />
+    <ClCompile Include="source\StringMath.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Convert.h" />
     <ClInclude Include="include\Bit.h" />
     <ClInclude Include="include\BitArray.h" />
-    <ClInclude Include="StringMath.h" />
+    <ClInclude Include="include\StringMath.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

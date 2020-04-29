@@ -1,11 +1,11 @@
 #include "StringMath.h"
 #include <iostream>
-
+#include <BitArray.h>
 using namespace std;
 
 int main()
 {
-	StringMath str1("-0111");
-
-	cout << str1 * "285245";
+	BitArray bit1("110");
+	BitArray bit2("101");
+	BitArray bit3 = bit1 - bit2;
 }

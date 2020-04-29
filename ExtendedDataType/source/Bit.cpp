@@ -26,18 +26,19 @@ Bit& Bit::operator=(const Bit& bit)
 	return *this;
 }
 
-Bit Bit::add(const Bit& bit, Bit& carry)
+Bit::operator bool() const
 {
-	char countBit1 = 0;
-	if (m_bBit)			countBit1++;
-	if (bit.m_bBit)		countBit1++;
-	if (carry.m_bBit)	countBit1++;
+	return m_bBit;
+}
 
-	Bit result = m_bBit ^ bit.m_bBit ^ carry.m_bBit;
-	if (countBit1 >= 2)	carry = 1;
-	else				carry = 0;
+Bit::operator int() const
+{
+	return (int)m_bBit;
+}
 
-	return result;
+Bit::operator char() const
+{
+	return (char)m_bBit;
 }
 
 bool Bit::operator==(const Bit& bit) const
@@ -72,12 +73,12 @@ Bit Bit::operator~()
 	return 0;
 }
 
-bool Bit::isBit0()
+bool Bit::isBit0() const
 {
 	return (!m_bBit);
 }
 
-bool Bit::isBit1()
+bool Bit::isBit1() const
 {
 	return m_bBit;
 }

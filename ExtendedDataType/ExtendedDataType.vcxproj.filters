@@ -24,10 +24,13 @@
     <ClCompile Include="source\Bit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Convert.cpp">
+    <ClCompile Include="source\StringMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\StringMath.cpp">
+    <ClCompile Include="source\Convert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +41,10 @@
     <ClInclude Include="include\Bit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Convert.h">
+    <ClInclude Include="include\StringMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\StringMath.h">
+    <ClInclude Include="include\Convert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

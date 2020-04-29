@@ -2,6 +2,11 @@
 #include <vector>
 #include <algorithm>
 
+StringMath::StringMath()
+{
+    m_sLongNumber = "0";
+}
+
 StringMath::StringMath(const std::string& longNumber)
 {
     std::string numberNormalize = normalize(longNumber);
@@ -10,12 +15,18 @@ StringMath::StringMath(const std::string& longNumber)
 
 StringMath::StringMath(const char* longNumber) :StringMath(std::string(longNumber))
 {
-
+ 
 }
 
 StringMath::StringMath(const StringMath& strMath)
 {
-    m_sLongNumber = strMath.m_sLongNumber;
+	m_sLongNumber = strMath.m_sLongNumber;
+}
+
+StringMath& StringMath::operator=(const StringMath& rhs)
+{
+    m_sLongNumber = rhs.m_sLongNumber;
+    return *this;
 }
 
 StringMath StringMath::operator*(const StringMath& rhs)
@@ -120,7 +131,7 @@ StringMath StringMath::operator/(int divisor)
     while (absLongNumber.m_sLongNumber.size() > idx)
     {
         result += (temp / divisor) + '0';
-        temp = (temp % divisor) * 10 + absLongNumber.m_sLongNumber[++idx] - '0';
+        temp = (temp % divisor) * 10 + (absLongNumber.m_sLongNumber[++idx] - '0');
     }
 
     // If divisor is greater than number 
@@ -133,10 +144,29 @@ StringMath StringMath::operator/(int divisor)
     return result;
 }
 
-std::ostream& operator<<(std::ostream& out, const StringMath& str)
+StringMath StringMath::operator+(const StringMath& rhs)
 {
-    out << str.m_sLongNumber;
-    return out;
+    StringMath num1(this->abs());
+    StringMath num2(rhs.abs());
+    
+    StringMath result;
+    if (this->isNegative() && rhs.isNegative())
+    {
+        result = this->add(rhs).m_sLongNumber;
+        result.m_sLongNumber.insert(result.m_sLongNumber.begin(), '-');
+    }
+    else if (this->isPositive() && rhs.isPositive())
+    {
+        result = this->add(rhs).m_sLongNumber;
+    }
+
+    return result;
+}
+
+StringMath StringMath::operator-(const StringMath& rhs)
+{
+    StringMath result;
+    return result;
 }
 
 StringMath StringMath::abs() const
@@ -156,6 +186,11 @@ bool StringMath::isNegative() const
     return false;
 }
 
+bool StringMath::isPositive() const
+{
+    return (!isNegative());
+}
+
 std::string StringMath::normalize(const std::string longNumber)
 {
     std::string result = longNumber;
@@ -167,7 +202,7 @@ std::string StringMath::normalize(const std::string longNumber)
 
     // Erase space
     result.erase(std::remove_if(result.begin(), result.end(), std::isspace), result.end());
-
+   
     // Check position "-"
     if (result.find("-", 0) > 0 && result.find("-", 0) < result.size())
         throw std::logic_error("Error format");
@@ -182,3 +217,34 @@ std::string StringMath::normalize(const std::string longNumber)
 
     return result;
 }
+
+StringMath StringMath::add(const StringMath& numPositive2)
+{
+    uint i, j;
+    i = this->m_sLongNumber.size();
+    j = numPositive2.m_sLongNumber.size();
+
+    std::string result;
+    int carry = 0;
+    while (i < 0 && j < 0)
+    {
+        int num1 = 0;
+        int num2 = 0;
+
+        if (i >= 0) num1 = this->m_sLongNumber[--i];
+        if (j >= 0) num2 = numPositive2.m_sLongNumber[--j];
+
+        int numResult = num1 + num2 + carry;
+
+        result.push_back(numResult % 10);
+        carry = numResult / 10;
+    }
+
+    std::reverse(result.begin(), result.end());
+    return result;
+}
+//
+//StringMath pow(const StringMath& base, int exp)
+//{
+//    int absExp = std::abs(exp);
+//}

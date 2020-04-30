@@ -24,6 +24,10 @@ public:
 	Bit getBit(uint index) const;
 	void setBlock(uint index, uchar value);
 	uchar getBlock(uint index) const;
+	Bit getLSB() const;
+	Bit getMSB() const;
+	void setLSB();
+	void setMSB();
 
 	uint getNumBlock() const;
 	uint getBitLength() const;

@@ -1,5 +1,6 @@
 #include "BitArray.h"
 #include <iostream>
+#include <algorithm>
 
 BitArray::BitArray()
 {
@@ -74,7 +75,7 @@ void BitArray::setBit(uint index)
 	if (index >= 0 && index < m_vBlockBit.size() << 3)
 	{
 		uint nRealIndex = index % 8;
-		uint nRealBlock = (m_vBlockBit.size() - 1) - (index >> 3);
+		uint nRealBlock = index / 8;
 		m_vBlockBit[nRealBlock] |= (1 << nRealIndex);
 	}
 }
@@ -84,7 +85,7 @@ Bit BitArray::getBit(uint index) const
 	if (index >= 0 && index < m_vBlockBit.size() << 3)
 	{
 		uint nRealIndex = index % 8;
-		uint nRealBlock = (m_vBlockBit.size() - 1) - (index >> 3);
+		uint nRealBlock = index / 8;
 		return (m_vBlockBit[nRealBlock] >> nRealIndex) & 1;
 	}
 
@@ -105,9 +106,29 @@ uchar BitArray::getBlock(uint index) const
 	return 0;
 }
 
+Bit BitArray::getLSB() const
+{
+	return getBit(0);
+}
+
+Bit BitArray::getMSB() const
+{
+	return getBit(getBitLength() - 1);
+}
+
 uint BitArray::getNumBlock() const
 {
 	return uint(m_vBlockBit.size());
+}
+
+void BitArray::setLSB()
+{
+	setBit(0);
+}
+
+void BitArray::setMSB()
+{
+	setBit(getBitLength() - 1);
 }
 
 uint BitArray::getBitLength() const
@@ -147,21 +168,21 @@ std::string BitArray::toString()
 
 BitArray& BitArray::operator=(const BitArray& rhs)
 {
-	BitArray bitArr(rhs.getBitLength());
-	for (uint i = 0; i < bitArr.getBitLength(); i++)
+	this->clear();
+	for (uint i = 0; i < getBitLength(); i++)
 		if (rhs.getBit(i).isBit1())
 			this->setBit(i);
 
-	m_vBlockBit = bitArr.m_vBlockBit;
 	return *this;
 }
 
 BitArray BitArray::operator+(const BitArray& rhs) const
 {
-	BitArray bitArrResult(this->getBitLength());
+	uint maxBitLen = std::max(this->getBitLength(), rhs.getBitLength());
+	BitArray bitArrResult(maxBitLen);
 
 	Bit carry = 0;
-	for (uint i = 0; i < this->getBitLength(); i++)
+	for (uint i = 0; i < maxBitLen; i++)
 	{
 		Bit bit1 = this->getBit(i);
 		Bit bit2 = rhs.getBit(i);
@@ -180,16 +201,67 @@ BitArray BitArray::operator+(const BitArray& rhs) const
 
 BitArray BitArray::operator-(const BitArray& rhs) const
 {
-	BitArray result(getBitLength());
 	BitArray rhsTwoComp = rhs.toTwoComplement();
-	result = *this + rhsTwoComp;
+	BitArray result = *this + rhsTwoComp;
+	
 	return result;
 }
 
+// Algorithm: Booth (refer Wiki)
 BitArray BitArray::operator*(const BitArray& rhs) const
 {
-	BitArray result(getBitLength());
-	return result;
+	BitArray m(*this);
+	BitArray mNeg(this->toTwoComplement());
+	BitArray r(rhs);
+
+	uint x = m.getBitLength();
+	uint y = r.getBitLength();
+
+	BitArray A(x + y);
+	BitArray S(x + y);
+	BitArray P(x + y);
+
+	uint j = A.getBitLength();
+	for (uint i = 0; i < x; i++)
+	{
+		j--;
+		if (m.getBit(x - 1 - i).isBit1())
+			A.setBit(j);
+
+		if (mNeg.getBit(x - 1 - i).isBit1())
+			S.setBit(j);
+	}
+
+	j = P.getBitLength() - x;
+	for (uint i = 0; i < y; i++)
+	{
+		j--;
+		if (r.getBit(y - 1 - i).isBit1())
+			P.setBit(j);
+	}
+
+	uint nStep = 0;
+	Bit bitAdd(0);
+	while (nStep < y)
+	{
+		Bit bit0 = bitAdd;
+		Bit bit1 = P.getLSB();
+
+		if (bit1.isBit0() && bit0.isBit1())
+			P = P + A;
+		else if (bit1.isBit1() && bit0.isBit0())
+			P = P + S;
+
+		Bit prevMSB = P.getMSB();
+		bitAdd = bit1;
+		P = P >> 1;
+		if (prevMSB.isBit1())
+			P.setMSB();
+
+		nStep++;
+	}
+
+	return P;
 }
 
 BitArray BitArray::operator/(const BitArray& rhs) const

@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-	BitArray bit1("11110110110");
-	BitArray bit2("111");
-	BitArray bit3 = bit1 * bit2;
+	StringMath str1("-02.00");
+	StringMath str2("043.265");
+	StringMath str3 = str1 * str2;
 }

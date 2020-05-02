@@ -1,21 +1,23 @@
 #include "StringMath.h"
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 StringMath::StringMath()
 {
-    m_sLongNumber = "0";
+	m_sLongNumber = "0";
 }
 
-StringMath::StringMath(const std::string& longNumber)
+StringMath::StringMath(const std::string& decimalNumber)
 {
-    std::string numberNormalize = normalize(longNumber);
-    m_sLongNumber = numberNormalize;
+	if (validData(decimalNumber))
+		m_sLongNumber = decimalNumber;
+	else 
+		throw std::logic_error("Error data");
 }
 
-StringMath::StringMath(const char* longNumber) :StringMath(std::string(longNumber))
+StringMath::StringMath(const char* decimalNumber) : StringMath(std::string(decimalNumber))
 {
- 
+	
 }
 
 StringMath::StringMath(const StringMath& strMath)
@@ -25,226 +27,341 @@ StringMath::StringMath(const StringMath& strMath)
 
 StringMath& StringMath::operator=(const StringMath& rhs)
 {
-    m_sLongNumber = rhs.m_sLongNumber;
-    return *this;
+	m_sLongNumber = rhs.m_sLongNumber;
+	return *this;
 }
 
 StringMath StringMath::operator*(const StringMath& rhs)
 {
-    StringMath num1(this->abs());
-    StringMath num2(rhs.abs());
+	if (rhs == StringMath("0") || *this == StringMath("0"))
+		return "0";
 
-    int len1 = num1.m_sLongNumber.size();
-    int len2 = num2.m_sLongNumber.size();
+	StringMath abs1 = this->abs();
+	StringMath abs2 = rhs.abs();
 
-    if (len1 == 0 || len2 == 0)
-        return "0";
+	std::string num1 = abs1.m_sLongNumber;
+	std::string num2 = abs2.m_sLongNumber;
+	if (abs1.getPosPoint() != NO_POINT)
+		num1.erase(num1.begin() + abs1.getPosPoint());
+	if (abs2.getPosPoint() != NO_POINT)
+		num2.erase(num2.begin() + abs2.getPosPoint());
+	
+	uint len1 = num1.length();
+	uint len2 = num2.length();
 
-    // will keep the result number in vector 
-    // in reverse order 
-    std::vector<int> tmpResult(len1 + len2, 0);
 
-    // Below two indexes are used to find positions 
-    // in result.  
-    int i_n1 = 0;
-    int i_n2 = 0;
+	// will keep the result number in vector 
+	// in reverse order 
+	std::vector<int> result(len1 + len2, 0);
 
-    // Go from right to left in num1 
-    for (int i = len1 - 1; i >= 0; i--)
-    {
-        int carry = 0;
-        int n1 = num1.m_sLongNumber[i] - '0';
+	// Below two indexes are used to find positions 
+	// in result.  
+	int i_n1 = 0;
+	int i_n2 = 0;
 
-        // To shift position to left after every 
-        // multiplication of a digit in num2 
-        i_n2 = 0;
+	for (int i = len1 - 1; i >= 0; i--)
+	{
+		int carry = 0;
 
-        // Go from right to left in num2              
-        for (int j = len2 - 1; j >= 0; j--)
-        {
-            // Take current digit of second number 
-            int n2 = num2.m_sLongNumber[j] - '0';
+		int n1 = num1[i] - '0';
 
-            // Multiply with current digit of first number 
-            // and add result to previously stored result 
-            // at current position.  
-            int sum = n1 * n2 + tmpResult[i_n1 + i_n2] + carry;
+		// To shift position to left after every 
+		// multiplication of a digit in num2 
+		i_n2 = 0;
 
-            // Carry for next iteration 
-            carry = sum / 10;
+		if (n1)
+			// Go from right to left in num2              
+			for (int j = len2 - 1; j >= 0; j--)
+			{
+				// Take current digit of second number 
 
-            // Store result 
-            tmpResult[i_n1 + i_n2] = sum % 10;
+				int n2 = num2[j] - '0';
+				int sum = n1 * n2 + result[i_n1 + i_n2] + carry;
+				carry = sum / 10;
+				result[i_n1 + i_n2] = sum % 10;
 
-            i_n2++;
-        }
+				i_n2++;
+			}
 
-        // store carry in next cell 
-        if (carry > 0)
-            tmpResult[i_n1 + i_n2] += carry;
+		// store carry in next cell 
+		if (carry > 0)
+			result[i_n1 + i_n2] += carry;
 
-        // To shift position to left after every 
-        // multiplication of a digit in num1. 
-        i_n1++;
-    }
+		// To shift position to left after every 
+		// multiplication of a digit in num1. 
+		i_n1++;
+	}
 
-    // ignore '0's from the right 
-    int i = tmpResult.size() - 1;
-    while (i >= 0 && tmpResult[i] == 0)
-        i--;
+	// generate the result string 
+	std::string tmp;
+	for (long i = result.size() - 1; i >= 0; i--)
+		tmp.push_back(result[i] + '0');
+	uint posPoint = result.size() - (this->getNumDigitFractional() + rhs.getNumDigitFractional());
+	if (posPoint >= 0 && posPoint < result.size())
+		tmp.insert(posPoint, ".");
 
-    // If all were '0's - means either both or 
-    // one of num1 or num2 were '0' 
-    if (i == -1)
-        return "0";
+	normalize(tmp);
+	
+	bool sign = isNegative() ^ rhs.isNegative();
+	std::string ans;
+	
+	if (sign) ans.push_back('-');
+	ans += tmp;
 
-    // generate the result string 
-    std::string ans = "";
-
-    while (i >= 0)
-        ans += std::to_string(tmpResult[i--]);
-
-    if (this->isNegative() && rhs.isNegative()) {}
-    else if (this->isNegative() || rhs.isNegative())
-        ans.insert(ans.begin(), '-');
-
-    return ans;
+	return StringMath(ans);
 }
 
-StringMath StringMath::operator/(int divisor)
+StringMath StringMath::operator/(const StringMath& divisor)
 {
-    if (divisor == 0)
-        throw std::logic_error("Math error: divide by 0");
-
-    std::string result;
-    StringMath absLongNumber = this->abs();
-
-    // Find prefix of number that is larger than divisor
-    int idx = 0;
-    int temp = absLongNumber.m_sLongNumber[idx] - '0';
-    while (temp < divisor)
-        temp = temp * 10 + (absLongNumber.m_sLongNumber[++idx] - '0');
-
-    // Repeatedly divide divisor with temp. After  
-    // every division, update temp to include one  
-    // more digit. 
-    while (absLongNumber.m_sLongNumber.size() > idx)
-    {
-        result += (temp / divisor) + '0';
-        temp = (temp % divisor) * 10 + (absLongNumber.m_sLongNumber[++idx] - '0');
-    }
-
-    // If divisor is greater than number 
-    if (result.length() == 0)
-        return "0";
-
-    if (this->isNegative())
-        result.insert(result.begin(), '-');
-
-    return result;
+	StringMath result;
+	return result;
 }
 
 StringMath StringMath::operator+(const StringMath& rhs)
 {
-    StringMath num1(this->abs());
-    StringMath num2(rhs.abs());
-    
-    StringMath result;
-    if (this->isNegative() && rhs.isNegative())
-    {
-        result = this->add(rhs).m_sLongNumber;
-        result.m_sLongNumber.insert(result.m_sLongNumber.begin(), '-');
-    }
-    else if (this->isPositive() && rhs.isPositive())
-    {
-        result = this->add(rhs).m_sLongNumber;
-    }
+	if (isNegative() && rhs.isNegative()) {}
+	else if (isNegative() || rhs.isNegative())
+		return *this - rhs;
+	
+	StringMath num1(this->abs());
+	StringMath num2(rhs.abs());
 
-    return result;
+	uint maxLenInt = std::max(num1.getNumDigitInt(), num2.getNumDigitInt());
+	uint maxLenFrac = std::max(num1.getNumDigitFractional(), num2.getNumDigitFractional());
+
+	if (num1.getNumDigitInt() < num2.getNumDigitInt())
+		std::swap(num1, num2);
+	uint distance = num1.getNumDigitInt() - num2.getNumDigitInt();
+	
+	std::string result;
+	result.reserve(maxLenInt + maxLenFrac);
+
+	uint a, b, sum, carry;
+	a = b = sum = carry = 0;
+	for (long i = maxLenInt + maxLenFrac; i >= 0; i--) // + 1 (,)
+	{
+		a = num1[i];
+		b = num2[i - distance];
+
+		if (a != '.' && b != '.')
+		{
+			sum = (a - '0') + (b - '0') + carry;
+			result.push_back(sum % 10 + '0');
+			carry = sum / 10;
+		}
+		else
+			result.push_back('.');
+	}
+
+	if (carry != 0)
+		result.push_back(carry);
+
+	if (isNegative() && rhs.isNegative())
+		result.push_back('-');
+
+	std::reverse(result.begin(), result.end());
+	return StringMath(result);
 }
 
 StringMath StringMath::operator-(const StringMath& rhs)
 {
-    StringMath result;
-    return result;
+	StringMath result;
+	return result;
+}
+
+bool StringMath::operator>(const StringMath& rhs) const
+{
+	uint minLen = std::min(rhs.m_sLongNumber.length(), m_sLongNumber.length());
+	bool sign1 = isNegative();
+	bool sign2 = rhs.isNegative();
+
+	if (sign1 && !sign2)
+		return false;
+	else if (!sign1 && sign2)
+		return true;
+	else if (!sign1 && !sign2)
+	{
+		if (getNumDigitInt() > rhs.getNumDigitInt())
+			return true;
+		else if (getNumDigitInt() < rhs.getNumDigitInt())
+			return false;
+		else
+		{
+			for (uint i = 0; i < minLen; i++)
+				if (m_sLongNumber[i] != '.' && m_sLongNumber[i] > rhs.m_sLongNumber[i])
+					return true;
+		}
+	}
+	else if (sign1 && sign2)
+	{
+		if (getNumDigitInt() > rhs.getNumDigitInt())
+			return false;
+		else if (getNumDigitInt() < rhs.getNumDigitInt())
+			return true;
+		else
+		{
+			for (uint i = 1; i < minLen; i++)
+				if (m_sLongNumber[i] != '.' && m_sLongNumber[i] <= rhs.m_sLongNumber[i])
+					return true;
+		}
+	}
+
+	return false;
+}
+
+bool StringMath::operator<(const StringMath& rhs) const
+{
+	return true;
+}
+
+bool StringMath::operator>=(const StringMath& rhs) const
+{
+	return true;
+}
+bool StringMath::operator<=(const StringMath& rhs) const
+{
+	return true;
+}
+
+bool StringMath::operator==(const StringMath& rhs) const
+{
+	if (m_sLongNumber == rhs.m_sLongNumber)
+		return true;
+
+	return false;
+}
+
+bool StringMath::operator!=(const StringMath& rhs) const
+{
+	return true;
 }
 
 StringMath StringMath::abs() const
 {
-    std::string result = m_sLongNumber;
-    if (m_sLongNumber.find('-', 0) == 0)
-        result.erase(result.begin());
+	StringMath result = *this;
+	if (isNegative())
+		result.m_sLongNumber.erase(result.m_sLongNumber.begin());
+	else
+		result.m_sLongNumber = m_sLongNumber;
 
-    return result;
+	return result;
+}
+
+char StringMath::operator[](long index)
+{
+	if (index >= 0 && index < m_sLongNumber.size())
+		return m_sLongNumber[index];
+	return '0';
 }
 
 bool StringMath::isNegative() const
 {
-    if (m_sLongNumber.find('-', 0) == 0)
-        return true;
-
-    return false;
+	if (m_sLongNumber[0] == '-')
+		return true;
+	return false;
 }
 
 bool StringMath::isPositive() const
 {
-    return (!isNegative());
+	return (!isNegative());
 }
 
-std::string StringMath::normalize(const std::string longNumber)
+bool StringMath::validData(const std::string& decimalNumber)
 {
-    std::string result = longNumber;
-    if (result.size() == 0)
-    {
-        result = "0";
-        return result;
-    }
+	if (decimalNumber.length() == 0)
+		return false;
 
-    // Erase space
-    result.erase(std::remove_if(result.begin(), result.end(), std::isspace), result.end());
-   
-    // Check position "-"
-    if (result.find("-", 0) > 0 && result.find("-", 0) < result.size())
-        throw std::logic_error("Error format");
+	uint countNeg = 0;
+	uint countPoint = 0;
+	std::string digits = "0123456789";
 
-    // Check sLongNumber have all digit
-    std::string digit = "-0123456789";
-    for (uint i = 0; i < result.size(); i++)
-    {
-        if (digit.find(result[i], 0) == std::string::npos)
-            throw std::logic_error("Error format");
-    }
+	for (uint i = 0; i < decimalNumber.size(); i++)
+	{
+		if (decimalNumber[i] == '-')		
+			countNeg++;
+		else if (decimalNumber[i] == '.')	
+			countPoint++;
+		else if (digits.find(decimalNumber[i], 0) == std::string::npos)
+			return false;
+	}
 
-    return result;
+	if (countNeg == 1 && decimalNumber[0] != '-')
+		return false;
+	
+	if (countPoint == 1 && decimalNumber[0] == '.' || 
+		decimalNumber[decimalNumber.size() - 1] == '.')
+		return false;
+
+	if (countNeg > 1 || countPoint > 1)
+		return false;
+
+	return true;
 }
 
-StringMath StringMath::add(const StringMath& numPositive2)
+void StringMath::normalize(std::string& decimalNumber)
 {
-    uint i, j;
-    i = this->m_sLongNumber.size();
-    j = numPositive2.m_sLongNumber.size();
+	if (decimalNumber.size() == 0)
+		throw std::logic_error("Error data");
 
-    std::string result;
-    int carry = 0;
-    while (i < 0 && j < 0)
-    {
-        int num1 = 0;
-        int num2 = 0;
+	uint posPoint = StringMath(decimalNumber).getPosPoint();
 
-        if (i >= 0) num1 = this->m_sLongNumber[--i];
-        if (j >= 0) num2 = numPositive2.m_sLongNumber[--j];
+	if (posPoint != NO_POINT)
+	{
+		while (true)
+		{
+			if (decimalNumber[decimalNumber.size() - 1] == '0')
+				decimalNumber.erase(decimalNumber.end() - 1);
+			else
+				break;
+		}
 
-        int numResult = num1 + num2 + carry;
+		if (decimalNumber[decimalNumber.size() - 1] == '.')
+			decimalNumber.erase(decimalNumber.end() - 1);
 
-        result.push_back(numResult % 10);
-        carry = numResult / 10;
-    }
-
-    std::reverse(result.begin(), result.end());
-    return result;
+		while (true)
+		{
+			if (decimalNumber[0] == '0' && decimalNumber[1] != '.')
+				decimalNumber.erase(decimalNumber.begin());
+			else
+				break;
+		}
+	}
+	else
+	{
+		while (true)
+		{
+			if (decimalNumber[0] == '0')
+				decimalNumber.erase(decimalNumber.begin());
+			else
+				break;
+		}
+	}
 }
-//
-//StringMath pow(const StringMath& base, int exp)
-//{
-//    int absExp = std::abs(exp);
-//}
+
+uint StringMath::getPosPoint() const
+{
+	size_t index = m_sLongNumber.find('.', 0);
+	if (index == std::string::npos)
+		return NO_POINT;
+
+	return (uint)index;
+}
+
+uint StringMath::getNumDigitFractional() const
+{
+	uint posPoint = getPosPoint();
+	if (posPoint == NO_POINT)
+		return 0;
+	
+	return m_sLongNumber.length() - 1 - posPoint;
+}
+
+uint StringMath::getNumDigitInt() const
+{
+	uint posPoint = getPosPoint();
+
+	if (isNegative())
+		return posPoint - 1;
+
+	return posPoint;
+}

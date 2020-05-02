@@ -24,7 +24,6 @@
     <ClCompile Include="source\BitArray.cpp" />
     <ClCompile Include="source\Convert.cpp" />
     <ClCompile Include="source\StringMath.cpp" />
-    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Bit.h" />

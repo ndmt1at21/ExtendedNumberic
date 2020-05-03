@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-	StringMath str1("-02.00");
-	StringMath str2("043.265");
-	StringMath str3 = str1 * str2;
+	StringMath str1("-.0");
+	StringMath str2("02");
+	StringMath str3 = -str1;
 }

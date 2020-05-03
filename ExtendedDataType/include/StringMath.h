@@ -22,6 +22,7 @@ public:
 	StringMath operator/(const StringMath& divisor);
 	StringMath operator+(const StringMath& rhs);
 	StringMath operator-(const StringMath& rhs);
+	StringMath operator-();
 
 	bool operator>(const StringMath& rhs) const;
 	bool operator<(const StringMath& rhs) const;

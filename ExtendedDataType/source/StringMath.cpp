@@ -120,25 +120,29 @@ StringMath StringMath::operator/(const StringMath& divisor)
 StringMath StringMath::operator+(const StringMath& rhs)
 {
 	if (isNegative() && rhs.isNegative()) {}
-	else if (isNegative() || rhs.isNegative())
-		return *this - rhs;
+	else if (isNegative())
+		return rhs.abs() - this->abs();
+	else if (rhs.isNegative())
+		return this->abs() - rhs.abs();
 	
 	StringMath num1(this->abs());
 	StringMath num2(rhs.abs());
 
 	uint maxLenInt = std::max(num1.getNumDigitInt(), num2.getNumDigitInt());
 	uint maxLenFrac = std::max(num1.getNumDigitFractional(), num2.getNumDigitFractional());
-
-	if (num1.getNumDigitInt() < num2.getNumDigitInt())
-		std::swap(num1, num2);
-	uint distance = num1.getNumDigitInt() - num2.getNumDigitInt();
+	if (num2 > num1) std::swap(num1, num2);
 	
 	std::string result;
 	result.reserve(maxLenInt + maxLenFrac);
 
-	uint a, b, sum, carry;
+	uint a, b, sum, carry, posLast;
 	a = b = sum = carry = 0;
-	for (long i = maxLenInt + maxLenFrac; i >= 0; i--) // + 1 (,)
+	
+	if (maxLenFrac == 0)	posLast = maxLenInt - 1;
+	else					posLast = maxLenInt + maxLenFrac;
+
+	uint distance = num1.getNumDigitInt() - num2.getNumDigitInt();
+	for (long i = posLast; i >= 0; i--) 
 	{
 		a = num1[i];
 		b = num2[i - distance];
@@ -153,21 +157,99 @@ StringMath StringMath::operator+(const StringMath& rhs)
 			result.push_back('.');
 	}
 
-	if (carry != 0)
-		result.push_back(carry);
+	if (carry != 0)	
+		result.push_back(carry + '0');
 
 	if (isNegative() && rhs.isNegative())
 		result.push_back('-');
 
 	std::reverse(result.begin(), result.end());
+	normalize(result);
+
 	return StringMath(result);
 }
 
 StringMath StringMath::operator-(const StringMath& rhs)
 {
+	if (isNegative() && rhs.isPositive())
+	{
+		StringMath result = this->abs() + rhs.abs();
+		result.m_sLongNumber.insert(result.m_sLongNumber.begin(), '-');
+		return result;
+	}
+	else if (rhs.isNegative())
+		return *this + rhs.abs();
+
+	StringMath num1(this->abs());
+	StringMath num2(rhs.abs());
+
+	uint maxLenInt = std::max(num1.getNumDigitInt(), num2.getNumDigitInt());
+	uint maxLenFrac = std::max(num1.getNumDigitFractional(), num2.getNumDigitFractional());
+
+	bool sign = 0;
+	if (num2 > num1)
+	{
+		std::swap(num1, num2);
+		sign = 1;
+	}
+
+	std::string result;
+	result.reserve(maxLenInt + maxLenFrac);
+
+	int a, b, sub, carry, posLast;
+	a = b = sub = carry = 0;
+
+	if (maxLenFrac == 0)	posLast = maxLenInt - 1;
+	else					posLast = maxLenInt + maxLenFrac;
+
+	uint distance = num1.getNumDigitInt() - num2.getNumDigitInt();
+	for (long i = posLast; i >= 0; i--) 
+	{
+		a = num1[i];
+		b = num2[i - distance];
+
+		if (a != '.' && b != '.')
+		{
+			sub = (a - '0') - ((b - '0') + carry);
+			
+			if (sub < 0)
+			{
+				sub += 10;
+				carry = 1;
+			}
+			else
+				carry = 0;
+
+			result.push_back(sub + '0');
+		}
+		else
+			result.push_back('.');
+	}
+
+	if (sign)
+		result.push_back('-');
+	std::reverse(result.begin(), result.end());
+	normalize(result);
+
+	return StringMath(result);
+}
+
+StringMath StringMath::operator-()
+{
 	StringMath result;
+
+	if (isNegative())
+		result = this->abs();
+	else
+	{
+		result = *this;
+		result.m_sLongNumber.insert(result.m_sLongNumber.begin(), '-');
+	}
+	normalize(result.m_sLongNumber);
+
 	return result;
 }
+
 
 bool StringMath::operator>(const StringMath& rhs) const
 {
@@ -303,9 +385,22 @@ void StringMath::normalize(std::string& decimalNumber)
 	if (decimalNumber.size() == 0)
 		throw std::logic_error("Error data");
 
-	uint posPoint = StringMath(decimalNumber).getPosPoint();
+	StringMath dec = StringMath(decimalNumber);
+	uint posPoint = dec.getPosPoint();
+	bool isNeg = dec.isNegative();
 
-	if (posPoint != NO_POINT)
+	if (posPoint == NO_POINT)
+	{
+		uint posStart = isNeg;
+		while (true)
+		{
+			if (decimalNumber[posStart] == '0')
+				decimalNumber.erase(decimalNumber.begin() + posStart);
+			else
+				break;
+		}
+	}
+	else
 	{
 		while (true)
 		{
@@ -318,24 +413,18 @@ void StringMath::normalize(std::string& decimalNumber)
 		if (decimalNumber[decimalNumber.size() - 1] == '.')
 			decimalNumber.erase(decimalNumber.end() - 1);
 
+		uint posStart = isNeg;
 		while (true)
 		{
-			if (decimalNumber[0] == '0' && decimalNumber[1] != '.')
-				decimalNumber.erase(decimalNumber.begin());
+			if (decimalNumber[posStart] == '0' && decimalNumber[posStart + 1] != '.')
+				decimalNumber.erase(decimalNumber.begin() + posStart);
 			else
 				break;
 		}
 	}
-	else
-	{
-		while (true)
-		{
-			if (decimalNumber[0] == '0')
-				decimalNumber.erase(decimalNumber.begin());
-			else
-				break;
-		}
-	}
+
+	if (decimalNumber.size() == 0)
+		decimalNumber.push_back('0');
 }
 
 uint StringMath::getPosPoint() const
@@ -353,15 +442,19 @@ uint StringMath::getNumDigitFractional() const
 	if (posPoint == NO_POINT)
 		return 0;
 	
-	return m_sLongNumber.length() - 1 - posPoint;
+	return m_sLongNumber.size() - 1 - posPoint;
 }
 
 uint StringMath::getNumDigitInt() const
 {
 	uint posPoint = getPosPoint();
 
-	if (isNegative())
-		return posPoint - 1;
+	if (posPoint != NO_POINT)
+	{
+		if (isNegative())
+			return posPoint - 1;
+		return posPoint;
+	}
 
-	return posPoint;
+	return m_sLongNumber.size();
 }

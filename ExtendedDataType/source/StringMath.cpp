@@ -20,6 +20,26 @@ StringMath::StringMath(const char* decimalNumber) : StringMath(std::string(decim
 	
 }
 
+StringMath::StringMath(int number) :StringMath(std::to_string(number))
+{
+	
+}
+
+StringMath::StringMath(long number) :StringMath(std::to_string(number))
+{
+
+}
+
+StringMath::StringMath(float number) :StringMath(std::to_string(number))
+{
+
+}
+
+StringMath::StringMath(double number) :StringMath(std::to_string(number))
+{
+
+}
+
 StringMath::StringMath(const StringMath& strMath)
 {
 	m_sLongNumber = strMath.m_sLongNumber;
@@ -111,10 +131,61 @@ StringMath StringMath::operator*(const StringMath& rhs)
 	return StringMath(ans);
 }
 
-StringMath StringMath::operator/(const StringMath& divisor)
+StringMath StringMath::div(int divisor, uint precision)
 {
-	StringMath result;
-	return result;
+	std::string result;
+	
+	bool sign1 = isNegative();
+	bool sign2 = divisor > 0 ? 0 : 1;
+	bool sign = sign1 ^ sign2;
+	if (sign) 
+		result.push_back('-');
+
+	StringMath decNum = this->abs();
+	uint numDigitInt = decNum.getNumDigitInt();
+	divisor = std::abs(divisor);
+
+	// Find prefix of number that is larger 
+	// than divisor. 
+	unsigned long idx = 0;
+	int temp = decNum[idx] - '0';
+	while (temp < divisor && idx != numDigitInt - 1)
+	{
+		temp = temp * 10 + (decNum[++idx] - '0');
+	}
+
+	uint countPrecision = 0;
+	uint mod = 0;
+	while (countPrecision <= precision)
+	{
+		if (idx == numDigitInt)
+		{
+			result.push_back('.');
+			idx++;
+		}
+		else
+		{
+			result.push_back(temp / divisor + '0');
+			mod = temp % divisor;
+			idx++;
+			
+			if (decNum[idx] != '.')
+			{
+				temp = mod * 10 + (decNum[idx] - '0');
+			}
+			else
+			{
+				result.push_back('.');
+				temp = mod * 10 + (decNum[++idx] - '0');
+			}
+
+			if (idx >= numDigitInt)
+				countPrecision++;
+		}
+	}
+
+	normalize(result);
+	return StringMath(result);
 }
 
 StringMath StringMath::operator+(const StringMath& rhs)
@@ -291,20 +362,6 @@ bool StringMath::operator>(const StringMath& rhs) const
 	return false;
 }
 
-bool StringMath::operator<(const StringMath& rhs) const
-{
-	return true;
-}
-
-bool StringMath::operator>=(const StringMath& rhs) const
-{
-	return true;
-}
-bool StringMath::operator<=(const StringMath& rhs) const
-{
-	return true;
-}
-
 bool StringMath::operator==(const StringMath& rhs) const
 {
 	if (m_sLongNumber == rhs.m_sLongNumber)
@@ -315,7 +372,7 @@ bool StringMath::operator==(const StringMath& rhs) const
 
 bool StringMath::operator!=(const StringMath& rhs) const
 {
-	return true;
+	return !(*this == rhs);
 }
 
 StringMath StringMath::abs() const
@@ -346,6 +403,11 @@ bool StringMath::isNegative() const
 bool StringMath::isPositive() const
 {
 	return (!isNegative());
+}
+
+std::string StringMath::to_string() const
+{
+	return m_sLongNumber;
 }
 
 bool StringMath::validData(const std::string& decimalNumber)
@@ -455,6 +517,9 @@ uint StringMath::getNumDigitInt() const
 			return posPoint - 1;
 		return posPoint;
 	}
+	
+	if (isNegative())
+		return  m_sLongNumber.size() - 1;
 
 	return m_sLongNumber.size();
 }

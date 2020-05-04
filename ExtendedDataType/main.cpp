@@ -5,7 +5,6 @@ using namespace std;
 
 int main()
 {
-	StringMath str1("-.0");
-	StringMath str2("02");
-	StringMath str3 = -str1;
+	StringMath str1(25.589);
+	StringMath result = str1.div(-10, 5);
 }

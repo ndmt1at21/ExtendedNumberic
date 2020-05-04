@@ -5,7 +5,7 @@
 class Convert
 {
 public:
-	static std::string DecToBin(const std::string& decimal);
+	static std::string DecToBin(const std::string& decimal, uint precision);
 	static std::string BinToDec(const std::string& bits);
 	
 	static std::string BinToHex(const std::string& bits);

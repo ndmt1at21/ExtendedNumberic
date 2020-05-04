@@ -39,15 +39,14 @@ public:
 	bool isPositive() const;
 	StringMath getInt() const;
 	StringMath getFraction() const;
+	uint getPosPoint() const;
+	uint getNumDigitFractional() const;
+	uint getNumDigitInt() const;
 	std::string to_string() const;
 
 protected:
 	bool validData(const std::string& decimalNumber);
 	void normalize(std::string& decimalNumber);
-
-	uint getPosPoint() const;
-	uint getNumDigitFractional() const;
-	uint getNumDigitInt() const;
 };
 
 StringMath pow(const StringMath& decNum, long pow, uint precision);

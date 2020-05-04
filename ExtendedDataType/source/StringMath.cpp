@@ -200,7 +200,7 @@ StringMath StringMath::operator%(long divisor)
 
 	StringMath absNum = this->abs();
 	StringMath c = absNum.div(divisor, 0);
-	return absNum - c * divisor;
+	return *this - c * divisor;
 }
 
 StringMath StringMath::operator+(const StringMath& rhs)

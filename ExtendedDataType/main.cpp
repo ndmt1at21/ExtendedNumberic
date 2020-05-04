@@ -1,10 +1,12 @@
 #include "StringMath.h"
+#include "Convert.h"
 #include <iostream>
 #include <BitArray.h>
+
 using namespace std;
 
 int main()
 {
-	StringMath str1("10000000000000000000005889997101");
-	StringMath str2 = str1 % 2;
+	StringMath str1("-10.51");
+	std::string cvt = Convert::DecToBin(str1.to_string(), 100);
 }

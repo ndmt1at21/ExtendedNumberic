@@ -10,7 +10,10 @@ StringMath::StringMath()
 StringMath::StringMath(const std::string& decimalNumber)
 {
 	if (validData(decimalNumber))
+	{
 		m_sLongNumber = decimalNumber;
+		normalize(m_sLongNumber);
+	}
 	else 
 		throw std::logic_error("Error data");
 }
@@ -186,6 +189,18 @@ StringMath StringMath::div(long divisor, uint precision)
 
 	normalize(result);
 	return StringMath(result);
+}
+
+StringMath StringMath::operator%(long divisor)
+{
+	uint posPoint = getPosPoint();
+	if (posPoint != NO_POINT)
+		throw std::logic_error("operator use for interger");
+
+
+	StringMath absNum = this->abs();
+	StringMath c = absNum.div(divisor, 0);
+	return absNum - c * divisor;
 }
 
 StringMath StringMath::operator+(const StringMath& rhs)
@@ -430,7 +445,7 @@ StringMath StringMath::getFraction() const
 	uint posPoint = getPosPoint();
 
 	if (posPoint == NO_POINT)
-		return "0";
+		return "0.0";
 
 	std::string result;
 	result.reserve(posPoint + 2);
@@ -478,9 +493,12 @@ void StringMath::normalize(std::string& decimalNumber)
 	if (decimalNumber.size() == 0)
 		throw std::logic_error("Error data");
 
-	StringMath dec = StringMath(decimalNumber);
-	uint posPoint = dec.getPosPoint();
-	bool isNeg = dec.isNegative();
+	uint posPoint = 0;
+	posPoint = decimalNumber.find('.', 0);
+	if (posPoint == std::string::npos)
+		posPoint = NO_POINT;
+		
+	bool isNeg = decimalNumber[0] == '-' ? 1 : 0;
 
 	if (posPoint == NO_POINT)
 	{

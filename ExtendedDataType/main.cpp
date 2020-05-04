@@ -5,6 +5,6 @@ using namespace std;
 
 int main()
 {
-	StringMath str1(25);
-	StringMath result = str1.getFraction();
+	StringMath str1("10000000000000000000005889997101");
+	StringMath str2 = str1 % 2;
 }

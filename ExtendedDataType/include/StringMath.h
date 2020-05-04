@@ -24,6 +24,7 @@ public:
 	StringMath& operator=(const StringMath& rhs);
 	StringMath operator*(const StringMath& rhs);
 	StringMath div(long divisor, uint precision);
+	StringMath operator%(long divisor);
 	StringMath operator+(const StringMath& rhs);
 	StringMath operator-(const StringMath& rhs);
 	StringMath operator-();

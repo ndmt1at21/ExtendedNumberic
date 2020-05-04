@@ -23,7 +23,7 @@ public:
 
 	StringMath& operator=(const StringMath& rhs);
 	StringMath operator*(const StringMath& rhs);
-	StringMath div(int divisor, uint precision);
+	StringMath div(long divisor, uint precision);
 	StringMath operator+(const StringMath& rhs);
 	StringMath operator-(const StringMath& rhs);
 	StringMath operator-();
@@ -36,6 +36,8 @@ public:
 	StringMath abs() const;
 	bool isNegative() const;
 	bool isPositive() const;
+	StringMath getInt() const;
+	StringMath getFraction() const;
 	std::string to_string() const;
 
 protected:
@@ -46,4 +48,6 @@ protected:
 	uint getNumDigitFractional() const;
 	uint getNumDigitInt() const;
 };
+
+StringMath pow(const StringMath& decNum, long pow, uint precision);
 

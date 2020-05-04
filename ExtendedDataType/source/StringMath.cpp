@@ -131,7 +131,7 @@ StringMath StringMath::operator*(const StringMath& rhs)
 	return StringMath(ans);
 }
 
-StringMath StringMath::div(int divisor, uint precision)
+StringMath StringMath::div(long divisor, uint precision)
 {
 	std::string result;
 	
@@ -142,20 +142,20 @@ StringMath StringMath::div(int divisor, uint precision)
 		result.push_back('-');
 
 	StringMath decNum = this->abs();
-	uint numDigitInt = decNum.getNumDigitInt();
+	unsigned long numDigitInt = decNum.getNumDigitInt();
 	divisor = std::abs(divisor);
 
 	// Find prefix of number that is larger 
 	// than divisor. 
 	unsigned long idx = 0;
-	int temp = decNum[idx] - '0';
+	long temp = decNum[idx] - '0';
 	while (temp < divisor && idx != numDigitInt - 1)
 	{
 		temp = temp * 10 + (decNum[++idx] - '0');
 	}
 
-	uint countPrecision = 0;
-	uint mod = 0;
+	unsigned long countPrecision = 0;
+	unsigned long mod = 0;
 	while (countPrecision <= precision)
 	{
 		if (idx == numDigitInt)
@@ -410,6 +410,37 @@ std::string StringMath::to_string() const
 	return m_sLongNumber;
 }
 
+StringMath StringMath::getInt() const
+{
+	uint posPoint = getPosPoint();
+
+	if (posPoint == NO_POINT)
+		return *this;
+
+	std::string result;
+	result.reserve(posPoint);
+	for (uint i = 0; i < posPoint; i++)
+		result += m_sLongNumber[i];
+	
+	return result;
+}
+
+StringMath StringMath::getFraction() const
+{
+	uint posPoint = getPosPoint();
+
+	if (posPoint == NO_POINT)
+		return "0";
+
+	std::string result;
+	result.reserve(posPoint + 2);
+	result += "0.";
+	for (uint i = posPoint + 1; i < m_sLongNumber.size(); i++)
+		result += m_sLongNumber[i];
+
+	return result;
+}
+
 bool StringMath::validData(const std::string& decimalNumber)
 {
 	if (decimalNumber.length() == 0)
@@ -522,4 +553,21 @@ uint StringMath::getNumDigitInt() const
 		return  m_sLongNumber.size() - 1;
 
 	return m_sLongNumber.size();
+}
+
+StringMath pow(const StringMath& decNum, long pow, uint precision)
+{
+	StringMath result(1);
+	if (pow >= 0)
+	{
+		for (long i = 0; i < pow; i++)
+			result = result * decNum;
+	}
+	else
+	{
+		for (long i = 0; i < pow; i++)
+			result.div(std::abs(pow), precision);
+	}
+
+	return result;
 }

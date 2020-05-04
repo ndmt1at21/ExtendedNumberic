@@ -5,6 +5,6 @@ using namespace std;
 
 int main()
 {
-	StringMath str1(25.589);
-	StringMath result = str1.div(-10, 5);
+	StringMath str1(25);
+	StringMath result = str1.getFraction();
 }

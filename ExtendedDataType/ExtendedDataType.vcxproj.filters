@@ -30,7 +30,7 @@
     <ClCompile Include="source\Convert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QInt.cpp">
+    <ClCompile Include="source\QInt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +47,7 @@
     <ClInclude Include="include\Convert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QInt.h">
+    <ClInclude Include="include\QInt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

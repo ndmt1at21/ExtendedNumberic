@@ -20,18 +20,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="QInt.cpp" />
     <ClCompile Include="source\Bit.cpp" />
     <ClCompile Include="source\BitArray.cpp" />
     <ClCompile Include="source\Convert.cpp" />
+    <ClCompile Include="source\QInt.cpp" />
     <ClCompile Include="source\StringMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Bit.h" />
     <ClInclude Include="include\BitArray.h" />
     <ClInclude Include="include\Convert.h" />
+    <ClInclude Include="include\QInt.h" />
     <ClInclude Include="include\StringMath.h" />
-    <ClInclude Include="QInt.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

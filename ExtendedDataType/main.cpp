@@ -7,6 +7,7 @@ using namespace std;
 
 int main()
 {
-	StringMath str1("01011010");
-	std::string cvt = Convert::BinToHex(str1.to_string());
-}
+	BitArray bit1("1111");
+	BitArray bit2("1101");
+	BitArray bit3 = (bit1 * bit2);
+	std::string str = bit3.to_string();}

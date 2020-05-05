@@ -156,16 +156,6 @@ void BitArray::clear()
 		m_vBlockBit[i] = 0;
 }
 
-std::string BitArray::toString()
-{
-	std::string result(getBitLength(), '0');
-	for (uint i = getBitLength() - 1; i >= 0; i++)
-		if (getBit(i).isBit1())
-			result[i] = '1';
-
-	return result;
-}
-
 BitArray& BitArray::operator=(const BitArray& rhs)
 {
 	this->clear();
@@ -174,124 +164,6 @@ BitArray& BitArray::operator=(const BitArray& rhs)
 			this->setBit(i);
 
 	return *this;
-}
-
-BitArray BitArray::operator+(const BitArray& rhs) const
-{
-	uint maxBitLen = std::max(this->getBitLength(), rhs.getBitLength());
-	BitArray bitArrResult(maxBitLen);
-
-	Bit carry = 0;
-	for (uint i = 0; i < maxBitLen; i++)
-	{
-		Bit bit1 = this->getBit(i);
-		Bit bit2 = rhs.getBit(i);
-		Bit result = (bit1 ^ bit2) ^ carry;
-		
-		char tmp = (char)bit1 + (char)bit2 + (char)carry;
-		if (tmp >= 2)	carry = 1;
-		else			carry = 0;
-
-		if (result.isBit1())
-			bitArrResult.setBit(i);
-	}
-
-	return bitArrResult;
-}
-
-BitArray BitArray::operator-(const BitArray& rhs) const
-{
-	BitArray rhsTwoComp = rhs.toTwoComplement();
-	BitArray result = *this + rhsTwoComp;
-	
-	return result;
-}
-
-// Algorithm: Booth (refer Wiki)
-BitArray BitArray::operator*(const BitArray& rhs) const
-{
-	BitArray m(*this);
-	BitArray mNeg(this->toTwoComplement());
-	BitArray r(rhs);
-
-	uint x = m.getBitLength();
-	uint y = r.getBitLength();
-
-	BitArray A(x + y);
-	BitArray S(x + y);
-	BitArray P(x + y);
-
-	uint j = A.getBitLength();
-	for (uint i = 0; i < x; i++)
-	{
-		j--;
-		if (m.getBit(x - 1 - i).isBit1())
-			A.setBit(j);
-
-		if (mNeg.getBit(x - 1 - i).isBit1())
-			S.setBit(j);
-	}
-
-	j = P.getBitLength() - x;
-	for (uint i = 0; i < y; i++)
-	{
-		j--;
-		if (r.getBit(y - 1 - i).isBit1())
-			P.setBit(j);
-	}
-
-	uint nStep = 0;
-	Bit bitAdd(0);
-	while (nStep < y)
-	{
-		Bit bit0 = bitAdd;
-		Bit bit1 = P.getLSB();
-
-		if (bit1.isBit0() && bit0.isBit1())
-			P = P + A;
-		else if (bit1.isBit1() && bit0.isBit0())
-			P = P + S;
-
-		Bit prevMSB = P.getMSB();
-		bitAdd = bit1;
-		P = P >> 1;
-		if (prevMSB.isBit1())
-			P.setMSB();
-
-		nStep++;
-	}
-
-	return P;
-}
-
-BitArray BitArray::operator/(const BitArray& rhs) const
-{
-	BitArray result(getBitLength());
-	return result;
-}
-
-BitArray& BitArray::operator+=(const BitArray& rhs)
-{
-	*this = this->operator+(rhs);
-	return *this;
-}
-
-BitArray& BitArray::operator-=(const BitArray& rhs)
-{
-	BitArray result(getBitLength());
-	return result;
-}
-
-BitArray& BitArray::operator*=(const BitArray& rhs)
-{
-	BitArray result(getBitLength());
-	return result;
-}
-
-BitArray& BitArray::operator/=(const BitArray& rhs)
-{
-	BitArray result(getBitLength());
-	return result;
 }
 
 BitArray BitArray::operator|(const BitArray& rhs) const
@@ -359,6 +231,16 @@ BitArray BitArray::operator<<(uint nBits) const
 	return bitArrResult;
 }
 
+std::string BitArray::to_string()
+{
+	std::string result;
+	result.reserve(getBitLength());
+
+	for (long i = getBitLength() - 1; i >= 0; i--)
+		result.push_back((char)getBit(i) + '0');
+	return result;
+}
+
 void BitArray::normalizeBitLength(uint& bitLength)
 {
 	if (bitLength == 0)
@@ -372,11 +254,4 @@ void BitArray::normalizeBitLength(uint& bitLength)
 			bitLength = bitLenAccept[i];
 			break;
 		}
-}
-
-BitArray BitArray::toTwoComplement() const
-{
-	BitArray numOne("1");
-	BitArray result = ~(*this) + numOne;
-	return result;
 }

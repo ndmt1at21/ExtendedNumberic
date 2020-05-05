@@ -7,6 +7,6 @@ using namespace std;
 
 int main()
 {
-	StringMath str1("-10.51");
-	std::string cvt = Convert::DecToBin(str1.to_string(), 100);
+	StringMath str1("01011010");
+	std::string cvt = Convert::BinToHex(str1.to_string());
 }

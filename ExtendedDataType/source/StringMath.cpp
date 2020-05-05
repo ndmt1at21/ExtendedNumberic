@@ -572,20 +572,3 @@ uint StringMath::getNumDigitInt() const
 
 	return m_sLongNumber.size();
 }
-
-StringMath pow(const StringMath& decNum, long pow, uint precision)
-{
-	StringMath result(1);
-	if (pow >= 0)
-	{
-		for (long i = 0; i < pow; i++)
-			result = result * decNum;
-	}
-	else
-	{
-		for (long i = 0; i < pow; i++)
-			result.div(std::abs(pow), precision);
-	}
-
-	return result;
-}

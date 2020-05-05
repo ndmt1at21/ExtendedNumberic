@@ -49,5 +49,3 @@ protected:
 	void normalize(std::string& decimalNumber);
 };
 
-StringMath pow(const StringMath& decNum, long pow, uint precision);
-

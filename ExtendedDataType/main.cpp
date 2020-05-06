@@ -8,8 +8,8 @@ using namespace std;
 
 int main()
 {
-	QInt a(-100001);
-	QInt b("-10000");
+	QInt a("A", MODE::hex);
+	QInt b("123456");
 	QInt c = a + b;
 
 	std::string e = a.to_string();

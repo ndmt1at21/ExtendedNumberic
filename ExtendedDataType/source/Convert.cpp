@@ -3,9 +3,6 @@
 
 std::string Convert::DecToBin(const std::string& decimal, uint precision)
 {
-	if (!checkValidDec(decimal))
-		throw std::logic_error("error format");
-
 	StringMath dec(decimal);
 	StringMath absDec(dec.abs());
 	StringMath intPart = absDec.getInt();
@@ -50,9 +47,6 @@ std::string Convert::DecToBin(const std::string& decimal, uint precision)
 
 std::string Convert::BinToDec(const std::string& bits, uint precision)
 {
-	if (!checkValidBits(bits))
-		throw std::logic_error("error formar");
-
 	StringMath bitStr(bits);
 	StringMath absBits(bitStr.abs());
 	
@@ -98,9 +92,6 @@ std::string Convert::BinToDec(const std::string& bits, uint precision)
 
 std::string Convert::BinToHex(const std::string& bits)
 {
-	if (!checkValidBits(bits))
-		throw std::logic_error("error formart");
-
 	std::map<std::string, char> mapBinToHex
 	{
 		{"0000", '0'}, {"0001", '1'}, {"0010", '2'}, {"0011", '3'},
@@ -108,16 +99,6 @@ std::string Convert::BinToHex(const std::string& bits)
 		{"1000", '8'}, {"1001", '9'}, {"1010", 'A'}, {"1011", 'B'},
 		{"1100", 'C'}, {"1101", 'D'}, {"1110", 'E'}, {"1111", 'F'}
 	};
-
-	long lenNormalize = 0;
-	uint i = 0;
-	while (true)
-	{
-		if (bits.length() <= 4 * i)
-			break;
-		i++;
-	}
-	lenNormalize = 4 * i;
 
 	StringMath tmp(bits);
 	if (tmp.getPosPoint() != NO_POINT)
@@ -155,28 +136,22 @@ std::string Convert::DecToHex(const std::string& str)
 	return result;
 }
 
-bool Convert::checkValidDec(const std::string& dec)
+std::string Convert::HexToBin(const std::string& hex)
 {
-	StringMath s(dec);
-	return true;
-}
-
-bool Convert::checkValidBits(const std::string& bits)
-{
-	StringMath s(bits);
-
-	uint i = 0;
-	if (s.isNegative()) i = 1;
-
-	for (i; i < s.getPosPoint(); i++)
+	std::map<char, std::string> mapBinToHex
 	{
-		if (bits[i] > '1' || bits[i] < '0')
-			return false;
+		{'0', "0000"}, {'1', "0001"}, {'2', "0010"}, {'3', "0011"},
+		{'4', "0100"}, {'5', "0101"}, {'6', "0110"}, {'7', "0111"},
+		{'8', "1000"}, {'9', "1001"}, {'A', "1010"}, {'B', "1011"},
+		{'C', "1100"}, {'D', "1101"}, {'E', "1110"}, {'F', "1111"}
+	};
+
+	std::string result;
+	result.reserve(hex.length() * 4);
+	for (uint i = 0; i < hex.length(); i++)
+	{
+		result += mapBinToHex[hex[i]];
 	}
 
-	for (i = s.getPosPoint() + 1; i < bits.length(); i++)
-		if (bits[i] > '1' || bits[i] < '0')
-			return false;
-
-	return true;
+	return result;
 }

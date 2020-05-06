@@ -4,6 +4,14 @@
 #include <iostream>
 
 #define BIT_LENGTH 128 
+
+enum MODE
+{
+	bin = 0,
+	dec = 1,
+	hex = 2
+};
+
 class QInt
 {
 private:
@@ -11,7 +19,7 @@ private:
 
 public:
 	QInt();
-	QInt(const std::string& dec);
+	QInt(const std::string& dec, MODE mode = MODE::dec);
 	QInt(char n);
 	QInt(int n);
 	QInt(long n);

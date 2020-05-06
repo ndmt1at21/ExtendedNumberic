@@ -7,16 +7,29 @@ QInt::QInt() :m_data(BIT_LENGTH)
 
 }
 
-QInt::QInt(const std::string& dec)
+QInt::QInt(const std::string& strNum, MODE mode)
 {
-	std::string bits = Convert::DecToBin(dec, 0);
-	std::string absBits = StringMath(bits).abs().to_string();
-	
-	m_data = BitArray(bits);
-	m_data.resize(BIT_LENGTH);
+	if (mode == MODE::dec)
+	{
+		std::string bits = Convert::DecToBin(strNum, 0);
+		std::string absBits = StringMath(bits).abs().to_string();
 
-	if (bits[0] == '-')
-		m_data = ~m_data + BitArray("1");
+		m_data = BitArray(bits);
+		m_data.resize(BIT_LENGTH);
+
+		if (bits[0] == '-')
+			m_data = ~m_data + BitArray("1");
+	}
+	else if (mode == MODE::bin)
+	{
+		m_data = BitArray(strNum);
+	}
+	else if (mode == MODE::hex)
+	{
+		std::string bits = Convert::HexToBin(strNum);
+		m_data = BitArray(bits);
+	}
+
 }
 
 QInt::QInt(char n)
@@ -316,5 +329,5 @@ bool QInt::isNegative() const
 
 bool QInt::isPositive() const
 {
-	return (!isPositive());
+	return (!isNegative());
 }

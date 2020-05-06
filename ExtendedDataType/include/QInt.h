@@ -3,6 +3,7 @@
 #include <Convert.h>
 #include <iostream>
 
+#define BIT_LENGTH 128 
 class QInt
 {
 private:
@@ -32,6 +33,7 @@ public:
 	QInt operator&(const QInt& rhs) const;
 	QInt operator^(const QInt& rhs) const;
 	QInt operator~() const;
+	QInt operator-() const;
 	QInt operator>>(uint nBits) const;
 	QInt operator<<(uint nBits) const;
 	QInt RoL() const;

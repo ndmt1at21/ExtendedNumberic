@@ -212,7 +212,7 @@ BitArray BitArray::operator&(const BitArray& rhs) const
 {
 	BitArray bitArrResult(this->getBitLength());
 	for (uint i = 0; i < this->getNumBlock(); i++)
-		bitArrResult.setBlock(i, this->getBlock(i) | rhs.getBlock(i));
+		bitArrResult.setBlock(i, this->getBlock(i) & rhs.getBlock(i));
 
 	return bitArrResult;
 }

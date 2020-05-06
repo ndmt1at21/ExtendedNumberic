@@ -2,7 +2,7 @@
 #include "Convert.h"
 #include <algorithm>
 
-QInt::QInt() :m_data()
+QInt::QInt() :m_data(BIT_LENGTH)
 {
 
 }
@@ -10,32 +10,51 @@ QInt::QInt() :m_data()
 QInt::QInt(const std::string& dec)
 {
 	std::string bits = Convert::DecToBin(dec, 0);
+	std::string absBits = StringMath(bits).abs().to_string();
+	
 	m_data = BitArray(bits);
+	m_data.resize(BIT_LENGTH);
+
+	if (bits[0] == '-')
+		m_data = ~m_data + BitArray("1");
 }
 
 QInt::QInt(char n)
 {
-	char* bytes = new char[1];
-	std::memcpy(bytes, &n, 1);
+	uchar* bytes = new uchar[BIT_LENGTH / 8]{ 0 };
 
-	m_data = BitArray((uchar*)bytes, sizeof(char));
+	char tmp = std::abs(n);
+	std::memcpy(bytes, &tmp, sizeof(char));
+	m_data = BitArray(bytes, BIT_LENGTH / 8);
+
+	if (n < 0)
+		m_data = ~m_data + BitArray("1");
 	delete[] bytes;
 }
 
 QInt::QInt(int n)
 {
-	uchar* bytes = new uchar[sizeof(int)];
-	std::memcpy(bytes, &n, sizeof(int));
+	uchar* bytes = new uchar[BIT_LENGTH / 8]{ 0 };
 
-	m_data = BitArray(bytes, sizeof(int));
+	int tmp = std::abs(n);
+	std::memcpy(bytes, &tmp, sizeof(int));
+	m_data = BitArray(bytes, BIT_LENGTH / 8);
+
+	if (n < 0)
+		m_data = ~m_data + BitArray("1");
+	delete[] bytes;
 }
 
 QInt::QInt(long n)
 {
-	uchar* bytes = new uchar[sizeof(long)];
-	std::memcpy(bytes, &n, sizeof(long));
+	uchar* bytes = new uchar[BIT_LENGTH / 8]{ 0 };
 
-	m_data = BitArray(bytes, sizeof(long));
+	long tmp = std::abs(n);
+	std::memcpy(bytes, &tmp, sizeof(long));
+	m_data = BitArray(bytes, BIT_LENGTH / 8);
+
+	if (n < 0)
+		m_data = ~m_data + BitArray("1");
 	delete[] bytes;
 }
 
@@ -192,6 +211,13 @@ QInt QInt::operator~() const
 	QInt result;
 	result.m_data = ~m_data;
 
+	return result;
+}
+
+QInt QInt::operator-() const
+{
+	QInt result;
+	result.m_data = ~m_data + BitArray("1");
 	return result;
 }
 

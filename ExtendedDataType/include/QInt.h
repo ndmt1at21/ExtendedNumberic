@@ -50,11 +50,12 @@ public:
 	friend std::istream& operator>>(std::istream& in, QInt& qInt);
 	friend std::ostream& operator<<(std::ostream& out, const QInt& qInt);
 	std::string to_string() const;
+	std::string to_bin() const;
 	std::string to_dec() const;
 	std::string to_hex() const;
 
-protected:
 	bool isNegative() const;
 	bool isPositive() const;
 };
 
+QInt abs(QInt qInt);

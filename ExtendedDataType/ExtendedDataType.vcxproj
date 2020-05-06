@@ -32,6 +32,7 @@
     <ClInclude Include="include\Convert.h" />
     <ClInclude Include="include\QInt.h" />
     <ClInclude Include="include\StringMath.h" />
+    <ClInclude Include="TestConsole.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

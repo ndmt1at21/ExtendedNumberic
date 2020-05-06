@@ -3,16 +3,14 @@
 #include "QInt.h"
 #include <iostream>
 #include <BitArray.h>
+#include "TestConsole.h"
 
 using namespace std;
 
 int main()
 {
-	QInt a("A", MODE::hex);
-	QInt b("123456");
-	QInt c = a + b;
-
-	std::string e = a.to_string();
-	std::string d = b.to_dec();
-	std::string result = c.to_string();
+	QInt a(7);
+	QInt b(-3);
+	QInt c = a % b;
+	std::string d = c.to_dec();
 }

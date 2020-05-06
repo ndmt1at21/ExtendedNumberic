@@ -269,8 +269,16 @@ std::string BitArray::to_string() const
 	std::string result;
 	result.reserve(getBitLength());
 
-	for (long i = getBitLength() - 1; i >= 0; i--)
+	long flag = getBitLength() - 1;
+	while (getBit(flag).isBit0() && flag > 0)
+		flag--;
+
+	for (long i = flag; i >= 0; i--)
 		result.push_back((char)getBit(i) + '0');
+
+	if (result.size() == 0)
+		result.push_back('0');
+
 	return result;
 }
 

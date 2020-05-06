@@ -23,11 +23,13 @@ QInt::QInt(const std::string& strNum, MODE mode)
 	else if (mode == MODE::bin)
 	{
 		m_data = BitArray(strNum);
+		m_data.resize(BIT_LENGTH);
 	}
 	else if (mode == MODE::hex)
 	{
 		std::string bits = Convert::HexToBin(strNum);
 		m_data = BitArray(bits);
+		m_data.resize(BIT_LENGTH);
 	}
 
 }
@@ -155,20 +157,49 @@ QInt QInt::operator*(const QInt& rhs) const
 
 	QInt result;
 	result.m_data = P;
+	result.m_data.resize(BIT_LENGTH);
 
 	return result;
 }
 
 QInt QInt::operator/(const QInt& rhs) const
 {
-	QInt result;
-	return result;
+	QInt remainder; // A
+	QInt dividend = abs(*this); // Q
+	QInt divisor = abs(rhs); // M
+
+	uint k = BIT_LENGTH;
+	while (k > 0)
+	{
+		Bit msbDiv = dividend.m_data.getMSB();
+		remainder = remainder << 1;
+		dividend = dividend << 1;
+		if (msbDiv.isBit1())	
+			remainder.m_data.setLSB();
+
+		remainder = remainder - divisor;
+		if (remainder.isNegative())
+		{
+			remainder = remainder + divisor;
+		}
+		else
+		{
+			dividend.m_data.setLSB();
+		}
+
+		k--;
+	}
+
+	if (isNegative() ^ rhs.isNegative())
+		dividend = ~dividend + 1;
+
+	return dividend;
 }
 
 QInt QInt::operator%(const QInt& rhs) const
 {
-	QInt result;
-	return result;
+	QInt remainder = *this - (*this / rhs) * rhs;
+	return remainder;
 }
 
 QInt& QInt::operator+=(const QInt& rhs)
@@ -298,6 +329,11 @@ std::string QInt::to_string() const
 	return to_dec();
 }
 
+std::string QInt::to_bin() const
+{
+	return m_data.to_string();
+}
+
 std::string QInt::to_dec() const
 {
 	std::string bits;
@@ -330,4 +366,11 @@ bool QInt::isNegative() const
 bool QInt::isPositive() const
 {
 	return (!isNegative());
+}
+
+QInt abs(QInt qInt)
+{
+	if (qInt.isNegative())
+		return ~qInt + 1;
+	return qInt;
 }

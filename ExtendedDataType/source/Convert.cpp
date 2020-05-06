@@ -8,6 +8,9 @@ std::string Convert::DecToBin(const std::string& decimal, uint precision)
 	StringMath intPart = absDec.getInt();
 	StringMath fracPart = absDec.getFraction();
 
+	if (absDec == 0)
+		return "0";
+
 	// Convert int part to bin
 	std::string binInt;
 	while (intPart != 0)
@@ -100,10 +103,6 @@ std::string Convert::BinToHex(const std::string& bits)
 		{"1100", 'C'}, {"1101", 'D'}, {"1110", 'E'}, {"1111", 'F'}
 	};
 
-	StringMath tmp(bits);
-	if (tmp.getPosPoint() != NO_POINT)
-		return bits;
-	
 	std::string result;
 	std::string group4Bits;
 
@@ -119,11 +118,15 @@ std::string Convert::BinToHex(const std::string& bits)
 		}
 	}
 
-	while (group4Bits.length() != 4)
+	while (group4Bits.length() > 0 && group4Bits.length() < 4)
 		group4Bits.push_back('0');
-	std::reverse(group4Bits.begin(), group4Bits.end());
-	result.push_back(mapBinToHex[group4Bits]);
-
+	
+	if (group4Bits.length() == 4)
+	{
+		std::reverse(group4Bits.begin(), group4Bits.end());
+		result.push_back(mapBinToHex[group4Bits]);
+	}
+	
 	std::reverse(result.begin(), result.end());
 	return result;
 }
@@ -138,7 +141,7 @@ std::string Convert::DecToHex(const std::string& str)
 
 std::string Convert::HexToBin(const std::string& hex)
 {
-	std::map<char, std::string> mapBinToHex
+	std::map<char, std::string> mapHexToBin
 	{
 		{'0', "0000"}, {'1', "0001"}, {'2', "0010"}, {'3', "0011"},
 		{'4', "0100"}, {'5', "0101"}, {'6', "0110"}, {'7', "0111"},
@@ -150,7 +153,7 @@ std::string Convert::HexToBin(const std::string& hex)
 	result.reserve(hex.length() * 4);
 	for (uint i = 0; i < hex.length(); i++)
 	{
-		result += mapBinToHex[hex[i]];
+		result += mapHexToBin[hex[i]];
 	}
 
 	return result;

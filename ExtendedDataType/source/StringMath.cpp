@@ -534,8 +534,8 @@ void StringMath::normalize(std::string& decimalNumber)
 		}
 	}
 
-	if (decimalNumber.size() == 0)
-		decimalNumber.push_back('0');
+	if (decimalNumber.size() == 0 || (decimalNumber.size() == 1 && decimalNumber[0] == '-'))
+		decimalNumber = "0";
 }
 
 uint StringMath::getPosPoint() const

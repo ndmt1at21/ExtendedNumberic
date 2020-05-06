@@ -35,6 +35,9 @@ public:
 	void clear();
 
 	BitArray& operator=(const BitArray& rhs);
+	BitArray operator+(const BitArray& rhs) const;
+	BitArray operator-(const BitArray& rhs) const;
+
 	BitArray operator|(const BitArray& rhs) const;
 	BitArray operator&(const BitArray& rhs) const;
 	BitArray operator^(const BitArray& rhs) const;
@@ -42,7 +45,7 @@ public:
 	BitArray operator>>(uint nBits) const;
 	BitArray operator<<(uint nBits) const;
 
-	std::string to_string();
+	std::string to_string() const;
 
 protected:
 	// Assert bitLength true. Ex: bitLen = 10 -> normal -> 16

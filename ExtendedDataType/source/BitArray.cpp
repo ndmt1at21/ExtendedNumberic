@@ -159,11 +159,44 @@ void BitArray::clear()
 BitArray& BitArray::operator=(const BitArray& rhs)
 {
 	this->clear();
-	for (uint i = 0; i < getBitLength(); i++)
+	this->resize(rhs.getBitLength());
+
+	for (uint i = 0; i < rhs.getBitLength(); i++)
 		if (rhs.getBit(i).isBit1())
 			this->setBit(i);
 
 	return *this;
+}
+
+BitArray BitArray::operator+(const BitArray& rhs) const
+{
+	uint maxBitLen = std::max(this->getBitLength(), rhs.getBitLength());
+	BitArray bitArrResult(maxBitLen);
+
+	Bit carry = 0;
+	for (uint i = 0; i < maxBitLen; i++)
+	{
+		Bit bit1 = this->getBit(i);
+		Bit bit2 = rhs.getBit(i);
+		Bit result = (bit1 ^ bit2) ^ carry;
+		
+		char tmp = (char)bit1 + (char)bit2 + (char)carry;
+		if (tmp >= 2)	carry = 1;
+		else			carry = 0;
+
+		if (result.isBit1())
+			bitArrResult.setBit(i);
+	}
+
+	return bitArrResult;
+}
+
+BitArray BitArray::operator-(const BitArray& rhs) const
+{
+	BitArray rhsTwoComp = (~rhs + BitArray("1"));
+	BitArray result = *this + rhsTwoComp;
+	
+	return result;
 }
 
 BitArray BitArray::operator|(const BitArray& rhs) const
@@ -231,7 +264,7 @@ BitArray BitArray::operator<<(uint nBits) const
 	return bitArrResult;
 }
 
-std::string BitArray::to_string()
+std::string BitArray::to_string() const
 {
 	std::string result;
 	result.reserve(getBitLength());

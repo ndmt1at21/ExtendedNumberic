@@ -15,17 +15,28 @@ QInt::QInt(const std::string& dec)
 
 QInt::QInt(char n)
 {
-	m_data = BitArray((uchar*)n, sizeof(char));
+	char* bytes = new char[1];
+	std::memcpy(bytes, &n, 1);
+
+	m_data = BitArray((uchar*)bytes, sizeof(char));
+	delete[] bytes;
 }
 
 QInt::QInt(int n)
 {
-	m_data = BitArray((uchar*)n, sizeof(int));
+	uchar* bytes = new uchar[sizeof(int)];
+	std::memcpy(bytes, &n, sizeof(int));
+
+	m_data = BitArray(bytes, sizeof(int));
 }
 
 QInt::QInt(long n)
 {
-	m_data = BitArray((uchar*)n, sizeof(long));
+	uchar* bytes = new uchar[sizeof(long)];
+	std::memcpy(bytes, &n, sizeof(long));
+
+	m_data = BitArray(bytes, sizeof(long));
+	delete[] bytes;
 }
 
 QInt::QInt(const QInt& qInt)
@@ -46,26 +57,9 @@ QInt& QInt::operator=(const QInt& rhs)
 
 QInt QInt::operator+(const QInt& rhs) const
 {
-	uint maxBitLen = std::max(m_data.getBitLength(), rhs.m_data.getBitLength());
 	QInt result;
-	BitArray bitArrResult(maxBitLen);
+	result.m_data = this->m_data + rhs.m_data;
 
-	Bit carry = 0;
-	for (uint i = 0; i < maxBitLen; i++)
-	{
-		Bit bit1 = m_data.getBit(i);
-		Bit bit2 = rhs.m_data.getBit(i);
-		Bit sum = (bit1 ^ bit2) ^ carry;
-
-		char tmp = (char)bit1 + (char)bit2 + (char)carry;
-		if (tmp >= 2)	carry = 1;
-		else			carry = 0;
-
-		if (sum.isBit1())
-			bitArrResult.setBit(i);
-	}
-
-	result.m_data = bitArrResult;
 	return result;
 }
 
@@ -135,12 +129,14 @@ QInt QInt::operator*(const QInt& rhs) const
 
 QInt QInt::operator/(const QInt& rhs) const
 {
-
+	QInt result;
+	return result;
 }
 
 QInt QInt::operator%(const QInt& rhs) const
 {
-
+	QInt result;
+	return result;
 }
 
 QInt& QInt::operator+=(const QInt& rhs)
@@ -239,4 +235,60 @@ QInt QInt::RoR() const
 		result.m_data.setMSB();
 
 	return result;
+}
+
+std::istream& operator>>(std::istream& in, QInt& qInt)
+{
+	std::string dec;
+	std::getline(in, dec, '\n');
+
+	std::string bits = Convert::DecToBin(dec, 0);
+	qInt.m_data = BitArray(bits);
+
+	return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const QInt& qInt)
+{
+	out << qInt.to_dec();
+	return out;
+}
+
+std::string QInt::to_string() const
+{
+	return to_dec();
+}
+
+std::string QInt::to_dec() const
+{
+	std::string bits;
+	if (isNegative())
+	{
+		bits.push_back('-');
+		bits += (~m_data + BitArray("1")).to_string();
+	}
+	else
+		bits = m_data.to_string();
+
+	std::string dec = Convert::BinToDec(bits, 0);
+	return dec;
+}
+
+std::string QInt::to_hex() const
+{
+	std::string bits = m_data.to_string();
+	std::string hex = Convert::BinToHex(bits);
+	return hex;
+}
+
+bool QInt::isNegative() const
+{
+	if (m_data.getMSB().isBit1())
+		return true;
+	return false;
+}
+
+bool QInt::isPositive() const
+{
+	return (!isPositive());
 }

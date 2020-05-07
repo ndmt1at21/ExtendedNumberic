@@ -572,3 +572,8 @@ uint StringMath::getNumDigitInt() const
 
 	return m_sLongNumber.size();
 }
+
+uint StringMath::length() const
+{
+	return m_sLongNumber.size();
+}

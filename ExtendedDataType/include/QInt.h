@@ -19,7 +19,7 @@ private:
 
 public:
 	QInt();
-	QInt(const std::string& dec, MODE mode = MODE::dec);
+	QInt(const std::string& strNum, MODE mode = MODE::dec);
 	QInt(char n);
 	QInt(int n);
 	QInt(long n);

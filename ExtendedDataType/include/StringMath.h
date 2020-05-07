@@ -42,6 +42,7 @@ public:
 	uint getPosPoint() const;
 	uint getNumDigitFractional() const;
 	uint getNumDigitInt() const;
+	uint length() const;
 	std::string to_string() const;
 
 protected:

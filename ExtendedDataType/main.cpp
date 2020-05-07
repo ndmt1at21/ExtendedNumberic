@@ -9,8 +9,5 @@ using namespace std;
 
 int main()
 {
-	QInt a(7);
-	QInt b(-3);
-	QInt c = a % b;
-	std::string d = c.to_dec();
+	StringMath str("000.5055050");
 }

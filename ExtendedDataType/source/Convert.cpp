@@ -8,9 +8,6 @@ std::string Convert::DecToBin(const std::string& decimal, uint precision)
 	StringMath intPart = absDec.getInt();
 	StringMath fracPart = absDec.getFraction();
 
-	if (absDec == 0)
-		return "0";
-
 	// Convert int part to bin
 	std::string binInt;
 	while (intPart != 0)
@@ -19,7 +16,8 @@ std::string Convert::DecToBin(const std::string& decimal, uint precision)
 		intPart = intPart.div(2, 0);
 	}
 	std::reverse(binInt.begin(), binInt.end());
-
+	if (binInt.size() == 0)
+		binInt = "0";
 
 	//Covert fraction part to bin
 	std::string binFrac;

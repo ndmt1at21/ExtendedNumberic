@@ -42,23 +42,18 @@ void test()
 			else if (srcBase == "16")	qInt = QInt(opt[2], MODE::hex);
 
 			// Unary operator
-			if (opt[1] == "~" || opt[1] == "-")
+			typeOperator = opt[1];
+			if (typeOperator == "~" || typeOperator == "-" || typeOperator == "ror" || typeOperator == "rol")
 			{
-				if (srcBase == "2")
-				{
-					if (opt[1] == "~") result = (~qInt).to_bin();
-					else			   result = (-qInt).to_bin();
-				}
-				else if (srcBase == "10")
-				{
-					if (opt[1] == "~") result = (~qInt).to_dec();
-					else			   result = (-qInt).to_dec();
-				}
-				else if (srcBase == "16")
-				{
-					if (opt[1] == "~") result = (~qInt).to_hex();
-					else			   result = (-qInt).to_hex();
-				}
+				QInt tmp;
+				if (typeOperator == "~")		tmp = ~qInt;
+				else if (typeOperator == "-")	tmp = -qInt;
+				else if (typeOperator == "ror")	tmp = qInt.RoR();
+				else if (typeOperator == "rol")	tmp = qInt.RoL();
+
+				if (srcBase == "2")				result = (~qInt).to_bin();
+				else if (srcBase == "10")		result = (~qInt).to_dec();
+				else if (srcBase == "16")		result = (~qInt).to_hex();
 			}
 			// Convert srcBase to dstBase
 			else

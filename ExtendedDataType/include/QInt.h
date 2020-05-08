@@ -1,16 +1,10 @@
 #pragma once
 #include <BitArray.h>
 #include <Convert.h>
+#include "Mode.h"
 #include <iostream>
 
 #define BIT_LENGTH 128 
-
-enum MODE
-{
-	bin = 0,
-	dec = 1,
-	hex = 2
-};
 
 class QInt
 {

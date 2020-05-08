@@ -1,5 +1,6 @@
 #include "QInt.h"
 #include "Convert.h"
+#include "Mode.h"
 #include <algorithm>
 
 QInt::QInt() :m_data(BIT_LENGTH)

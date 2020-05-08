@@ -9,29 +9,45 @@ QFloat::QFloat(const std::string& strNum, MODE mode)
 {
 	if (mode == MODE::dec)
 	{
-		std::vector<std::string> standardize = normalize(strNum);
-		
-		bool sign = standardize[0][0] - '0';
-		std::string mantissa = standardize[2];
+		m_data = BitArray(BIT_LENGTH);
 
+		std::vector<std::string> standardize = normalize(strNum);
+		bool sign = standardize[0][0] - '0';
+		std::string fractionBit = standardize[2];
+		
 		std::stringstream ss(standardize[1]);
 		int exp = 0;
 		ss >> exp;
+
+		if (exp == 0 && fractionBit == "0")
+		{
+			if (strNum[0] == '-')
+				setBitSign();
+		}
+		else
+		{
+			exp += BIAS;
+			std::string expBit = Convert::DecToBin(std::to_string(exp), 0);
+
+			if (sign)
+				setBitSign();
+
+			for (uint i = 0; i < expBit.size(); i++)
+			{
+				if (expBit[expBit.size() - 1 - i] == '1')
+					setBitExp(i);
+			}
+
+			for (uint i = 0; i < fractionBit.size(); i++)
+				if (fractionBit[i] == '1')
+					setBitFrac(NUM_BIT_FRAC - 1 - i);
+		}
 	}
 	else if (mode == MODE::bin)
 	{
-
+		m_data = BitArray(strNum);
+		m_data.resize(BIT_LENGTH);
 	}
-}
-
-QFloat::QFloat(float fnum)
-{
-
-}
-
-QFloat::QFloat(double dnum)
-{
-
 }
 
 QFloat::QFloat(const QFloat& qFloat)
@@ -66,7 +82,7 @@ std::string QFloat::to_dec()
 
 	if (isDenormalize())
 	{
-		std::string fraction = Convert::BinToDec(getFraction().to_string(), PRECISION);
+		std::string fraction = Convert::BinToDec(getFraction(), PRECISION);
 
 		StringMath pow2Exp = 1;
 		for (uint i = 0; i < std::abs(0 - BIAS + 1); i++)
@@ -81,8 +97,8 @@ std::string QFloat::to_dec()
 	}
 	else
 	{
-		std::string exponent = Convert::BinToDec(getExp().to_string(), 0);
-		std::string fraction = Convert::BinToDec(getFraction().to_string(), PRECISION);
+		std::string exponent = Convert::BinToDec(getExp(), 0);
+		std::string fraction = Convert::BinToDec(getFraction(), PRECISION);
 
 		std::stringstream ss(exponent);
 		int realExp = 0;
@@ -281,27 +297,27 @@ Bit QFloat::getBitFrac(uint idx)
 	return Bit(0);
 }
 
-BitArray QFloat::getFraction()
+std::string QFloat::getFraction()
 {
-	BitArray fraction(NUM_BIT_FRAC);
+	std::string fraction;
 	for (uint i = 0; i < NUM_BIT_FRAC; i++)
-		if (getBitFrac(i).isBit1())
-			fraction.setBit(i);
-
-	return fraction;
+		fraction += (char)getBitFrac(NUM_BIT_FRAC - 1 - i) + '0';
+		
+	return "0." + fraction;
 }
-BitArray QFloat::getExp()
+std::string QFloat::getExp()
 {
 	BitArray exp(NUM_BIT_FRAC);
 	for (uint i = 0; i < NUM_BIT_EXP; i++)
 		if (getBitExp(i).isBit1())
 			exp.setBit(i);
 
-	return exp;
+	return exp.to_string();
 }
 
 std::vector<std::string> QFloat::normalize(const std::string dec)
 {
+	bool sign = StringMath(dec).isNegative();
 	StringMath absDec = StringMath(dec).abs();
 	std::string bits = Convert::DecToBin(absDec.to_string(), NUM_BIT_FRAC + std::abs(0 - BIAS + 1));
 	StringMath absDecBin(bits);
@@ -312,7 +328,6 @@ std::vector<std::string> QFloat::normalize(const std::string dec)
 	std::string mantissa;
 
 	// Check int part, before position point
-	long newPosPoint = 0;
 	long posPoint = absDecBin.getPosPoint();
 
 	if (posPoint == NO_POINT)
@@ -321,6 +336,7 @@ std::vector<std::string> QFloat::normalize(const std::string dec)
 	// Normalize & Inf, NaN
 	if (intPart != 0)
 	{
+		long newPosPoint = 0;
 		for (uint i = 0; i < posPoint; i++)
 		{
 			if (intPart[i] == '1')
@@ -330,7 +346,7 @@ std::vector<std::string> QFloat::normalize(const std::string dec)
 			}
 		}
 
-		for (long i = newPosPoint + 1; i < absDecBin.length(); i++)
+		for (long i = newPosPoint; i < absDecBin.length(); i++)
 		{
 			if (absDecBin[i] != '.')
 				mantissa += absDecBin[i];
@@ -342,23 +358,36 @@ std::vector<std::string> QFloat::normalize(const std::string dec)
 	{
 		for (uint i = posPoint + 1; i < absDecBin.length(); i++)
 		{
+			exp--;
 			if (exp == 0 - BIAS + 1 || absDecBin[i] == '1')
 				break;
-
-			newPosPoint = i + 1;
 		}
 
-		for (long i = newPosPoint + 1; i < absDecBin.length(); i++)
-				mantissa += absDecBin[i];
+		long j = 0;
+		for (long i = posPoint + std::abs(exp) + 1; i < absDecBin.length(); i++)
+		{
+			if (j == NUM_BIT_FRAC)
+				break;
+			mantissa += absDecBin[i];
 
-		exp = posPoint - newPosPoint + 1;
+			j++;
+		}
+
+		if (j == NUM_BIT_FRAC)
+		{
+			BitArray tmp(mantissa);
+			if (sign)	tmp = tmp - BitArray(1);
+			else		tmp = tmp + BitArray(1);
+			mantissa = tmp.to_string();
+		}
 	}
-
-	bool sign = StringMath(dec).isNegative();
 
 	std::vector<std::string> result(3);
 	result[0] = std::to_string(sign);
 	result[1] = std::to_string(exp);
+	
+	if (mantissa.size() == 0)
+		mantissa.push_back('0');
 	result[2] = mantissa;
 
 	return result;

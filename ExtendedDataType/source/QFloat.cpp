@@ -82,14 +82,27 @@ std::string QFloat::to_dec()
 
 	if (isDenormalize())
 	{
-		std::string fraction = Convert::BinToDec(getFraction(), PRECISION);
+		std::string fraction = Convert::BinToDec(getFraction(), LIMIT_NUM);
 
 		StringMath pow2Exp = 1;
 		for (uint i = 0; i < std::abs(0 - BIAS + 1); i++)
-				pow2Exp = pow2Exp.div(2, PRECISION);
+				pow2Exp = pow2Exp.div(2, LIMIT_NUM);
 
 		StringMath result = pow2Exp * StringMath(fraction);
-		std::string dec = result.to_string();
+		std::string dec = result.getInt().to_string();
+		
+		if (result.getPosPoint() != NO_POINT)
+			dec.push_back('.');
+
+		uint countPre = 0;
+		for (uint i = result.getPosPoint() + 1; i < result.length(); i++)
+		{
+			if (countPre == LIMIT_NUM)
+				break;
+			dec += result[i];
+			countPre++;
+		}
+		
 
 		if (isNegative())
 			return "-" + dec;
@@ -98,7 +111,7 @@ std::string QFloat::to_dec()
 	else
 	{
 		std::string exponent = Convert::BinToDec(getExp(), 0);
-		std::string fraction = Convert::BinToDec(getFraction(), PRECISION);
+		std::string fraction = Convert::BinToDec(getFraction(), LIMIT_NUM);
 
 		std::stringstream ss(exponent);
 		int realExp = 0;
@@ -111,7 +124,7 @@ std::string QFloat::to_dec()
 			if (realExp > 0)
 				pow2Exp = pow2Exp * 2;
 			else
-				pow2Exp = pow2Exp.div(2, PRECISION);
+				pow2Exp = pow2Exp.div(2, LIMIT_NUM);
 		}
 
 		StringMath result = pow2Exp * (StringMath(fraction) + 1);

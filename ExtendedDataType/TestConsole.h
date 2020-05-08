@@ -2,14 +2,15 @@
 #include <fstream>
 #include <string>
 #include <QInt.h>
+#include "QFloat.h"
 #include <sstream>
 
 using namespace std;
 
-void test()
+void testQInt(const std::string& linkInput, const std::string& linkOutput)
 {
-	std::ifstream inFile("input.txt");
-	std::ofstream outFile("output.txt");
+	std::ifstream inFile(linkInput);
+	std::ofstream outFile(linkOutput);
 	if (inFile.fail())
 		return;
 
@@ -127,5 +128,47 @@ void test()
 		typeOperator.clear();
 		line.clear();
 		opt.clear();
+	}
+}
+
+void testQFloat(const std::string& linkInput, const std::string& linkOutput)
+{
+	std::ifstream inFile(linkInput);
+	std::ofstream outFile(linkOutput);
+	if (inFile.fail())
+		return;
+
+	std::string srcBase;
+	std::string dstBase;
+	std::string data;
+	std::string line;
+
+	while (true)
+	{
+		if (!getline(inFile, line, '\n'))
+			break;
+
+		stringstream ss(line);
+		std::getline(ss, srcBase, ' ');
+		std::getline(ss, dstBase, ' ');
+		std::getline(ss, data, ' ');
+
+		std::string result;
+
+		if (srcBase == "10")
+		{
+			QFloat qFloat(data, MODE::dec);
+			result = qFloat.to_bin();
+		}
+		else if (srcBase == "2")
+		{
+			QFloat qFloat(data, MODE::bin);
+			result = qFloat.to_dec();
+		}
+		outFile << result << "\n";
+
+		srcBase.clear();
+		dstBase.clear();
+		line.clear();
 	}
 }

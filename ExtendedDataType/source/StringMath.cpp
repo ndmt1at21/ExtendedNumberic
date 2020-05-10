@@ -503,7 +503,7 @@ void StringMath::normalize(std::string& decimalNumber)
 	if (posPoint == NO_POINT)
 	{
 		uint posStart = isNeg;
-		while (true)
+		while (decimalNumber.size() > 0)
 		{
 			if (decimalNumber[posStart] == '0')
 				decimalNumber.erase(decimalNumber.begin() + posStart);
@@ -513,7 +513,7 @@ void StringMath::normalize(std::string& decimalNumber)
 	}
 	else
 	{
-		while (true)
+		while (decimalNumber.size() > 0)
 		{
 			if (decimalNumber[decimalNumber.size() - 1] == '0')
 				decimalNumber.erase(decimalNumber.end() - 1);
@@ -521,11 +521,11 @@ void StringMath::normalize(std::string& decimalNumber)
 				break;
 		}
 
-		if (decimalNumber[decimalNumber.size() - 1] == '.')
+		if (decimalNumber.size() > 0 && decimalNumber[decimalNumber.size() - 1] == '.')
 			decimalNumber.erase(decimalNumber.end() - 1);
 
 		uint posStart = isNeg;
-		while (true)
+		while (decimalNumber.size() > 0)
 		{
 			if (decimalNumber[posStart] == '0' && decimalNumber[posStart + 1] != '.')
 				decimalNumber.erase(decimalNumber.begin() + posStart);

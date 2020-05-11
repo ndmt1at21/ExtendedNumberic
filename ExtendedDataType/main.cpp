@@ -10,9 +10,10 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	BitArray bit1("101");
-	BitArray bit2("1010");
-	std::string b = Convert::BinToDec((bit1-bit2).to_string(), 0);
+	QInt a("-0");
+	QInt b("-0");
+	QInt c = a - b;
+	std::string f = c.to_dec();
 	/*if (argc == 4)
 	{
 		std::string linkInput = argv[1];
@@ -24,5 +25,4 @@ int main(int argc, char* argv[])
 		else if (type == "1")
 			testQFloat(linkInput, linkOutput);
 	};*/
-
 }

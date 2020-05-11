@@ -10,7 +10,7 @@
 #define NUM_BIT_EXP 15
 #define NUM_BIT_FRAC 112
 #define BIAS pow(2, NUM_BIT_EXP - 1) - 1
-#define PRECISION (NUM_BIT_FRAC + 1) * log10(2) // num digit can retain
+#define PRECISION (NUM_BIT_FRAC + 1) * log10(2)
 #define LIMIT_NUM 4965
 
 class QFloat
@@ -28,9 +28,10 @@ public:
 	std::string to_bin();
 	std::string to_string();
 
-protected:
 	bool isNegative();
 	bool isPositive();
+
+protected:
 	bool isZero();
 	bool isDenormalize();
 	bool isInf();

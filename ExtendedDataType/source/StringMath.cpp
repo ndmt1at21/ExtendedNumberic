@@ -493,7 +493,7 @@ void StringMath::normalize(std::string& decimalNumber)
 	if (decimalNumber.size() == 0)
 		throw std::logic_error("Error data");
 
-	uint posPoint = 0;
+	size_t posPoint = 0;
 	posPoint = decimalNumber.find('.', 0);
 	if (posPoint == std::string::npos)
 		posPoint = NO_POINT;

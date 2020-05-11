@@ -102,8 +102,7 @@ std::string QFloat::to_dec()
 			dec += result[i];
 			countPre++;
 		}
-		
-
+	
 		if (isNegative())
 			return "-" + dec;
 		return dec;
@@ -320,7 +319,7 @@ std::string QFloat::getFraction()
 }
 std::string QFloat::getExp()
 {
-	BitArray exp(NUM_BIT_FRAC);
+	BitArray exp(NUM_BIT_EXP);
 	for (uint i = 0; i < NUM_BIT_EXP; i++)
 		if (getBitExp(i).isBit1())
 			exp.setBit(i);
@@ -386,12 +385,21 @@ std::vector<std::string> QFloat::normalize(const std::string dec)
 			j++;
 		}
 
+		// Round
 		if (j == NUM_BIT_FRAC)
 		{
 			BitArray tmp(mantissa);
-			if (sign)	tmp = tmp - BitArray(1);
-			else		tmp = tmp + BitArray(1);
-			mantissa = tmp.to_string();
+			if (sign)	tmp = tmp - BitArray("1");
+			else		tmp = tmp + BitArray("1");
+
+			std::string resultTmp = tmp.to_string();
+			long j = mantissa.size() - 1;
+			for (long i = resultTmp.size() - 1; i >= 0; i--)
+			{
+				if (j < 0)
+					break;
+				mantissa[j--] = resultTmp[i];
+			}
 		}
 	}
 

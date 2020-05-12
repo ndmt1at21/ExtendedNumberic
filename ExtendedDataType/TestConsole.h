@@ -99,7 +99,7 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 			else if (typeOperator == "|")	qInt = n1 | n2;
 			else if (typeOperator == ">>")
 			{
-				stringstream ss(n2.to_dec());
+				stringstream ss(opt[3]);
 				uint a;
 				ss >> a;
 
@@ -107,7 +107,7 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 			}
 			else if (typeOperator == "<<")
 			{
-				stringstream ss(n2.to_dec());
+				stringstream ss(opt[3]);
 				uint a;
 				ss >> a;
 
@@ -115,7 +115,7 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 			}
 			else if (typeOperator == "ror")
 			{
-				stringstream ss(n2.to_dec());
+				stringstream ss(opt[3]);
 				uint a;
 				ss >> a;
 
@@ -123,7 +123,7 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 			}
 			else if (typeOperator == "rol")
 			{
-				stringstream ss(n2.to_dec());
+				stringstream ss(opt[3]);
 				uint a;
 				ss >> a;
 

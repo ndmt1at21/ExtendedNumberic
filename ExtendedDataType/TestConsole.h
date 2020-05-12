@@ -31,6 +31,7 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 			opt.push_back(tmp);
 
 		std::string result;
+		bool compareResult = true;
 		
 		// Unary operator and Convert 
 		if (opt.size() == 3)
@@ -98,7 +99,6 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 			else if (typeOperator == "~")	qInt = ~n1;
 			else if (typeOperator == "&")	qInt = n1 & n2;
 			else if (typeOperator == "|")	qInt = n1 | n2;
-			else if (typeOperator == "^")	qInt = n1 ^ n2;
 			else if (typeOperator == ">>")
 			{
 				stringstream ss(n2.to_dec());
@@ -115,19 +115,33 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 
 				qInt = n1 << a;
 			}
+			else if (typeOperator == "==")	compareResult = n1 == n2;
+			else if (typeOperator == ">")	compareResult = n1 > n2;
+			else if (typeOperator == "<")	compareResult = n1 < n2;
+			else if (typeOperator == ">=")	compareResult = n1 >= n2;
+			else if (typeOperator == "<=")	compareResult = n1 <= n2;
 
 			if (srcBase == "2")			result = qInt.to_bin();
 			else if (srcBase == "10")	result = qInt.to_dec();
 			else if (srcBase == "16")	result = qInt.to_hex();
 		}
 
-		outFile << result << "\n";
+		if (typeOperator == "==" || typeOperator == ">" || typeOperator == "<" ||
+			typeOperator == ">=" || typeOperator == "<=")
+		{
+			outFile << compareResult << "\n";
+		}
+		else
+		{
+			outFile << result << "\n";
+		}
 
 		srcBase.clear();
 		dstBase.clear();
 		typeOperator.clear();
 		line.clear();
 		opt.clear();
+		result.clear();
 	}
 }
 

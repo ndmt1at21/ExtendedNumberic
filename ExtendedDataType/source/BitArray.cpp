@@ -240,7 +240,7 @@ BitArray BitArray::operator>>(uint nBits) const
 {
 	BitArray bitArrResult(getBitLength());
 
-	for (uint i = 0; i < getBitLength(); i++)
+	for (long i = 0; i < getBitLength(); i++)
 	{
 		Bit bit = this->getBit(i);
 		if (bit.isBit1())
@@ -254,7 +254,7 @@ BitArray BitArray::operator<<(uint nBits) const
 {
 	BitArray bitArrResult(getBitLength());
 
-	for (uint i = 0; i < getBitLength(); i++)
+	for (long i = 0; i < getBitLength(); i++)
 	{
 		Bit bit = this->getBit(i);
 		if (bit.isBit1())

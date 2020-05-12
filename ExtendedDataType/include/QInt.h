@@ -45,8 +45,8 @@ public:
 	QInt operator-() const;
 	QInt operator>>(uint nBits) const;
 	QInt operator<<(uint nBits) const;
-	QInt RoL() const;
-	QInt RoR() const;
+	QInt RoL(uint n) const;
+	QInt RoR(uint n) const;
 
 	friend std::istream& operator>>(std::istream& in, QInt& qInt);
 	friend std::ostream& operator<<(std::ostream& out, const QInt& qInt);

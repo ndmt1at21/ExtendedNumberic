@@ -45,13 +45,11 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 
 			// Unary operator
 			typeOperator = opt[1];
-			if (typeOperator == "~" || typeOperator == "-" || typeOperator == "ror" || typeOperator == "rol")
+			if (typeOperator == "~" || typeOperator == "-")
 			{
 				QInt tmp;
 				if (typeOperator == "~")		tmp = ~qInt;
 				else if (typeOperator == "-")	tmp = -qInt;
-				else if (typeOperator == "ror")	tmp = qInt.RoR();
-				else if (typeOperator == "rol")	tmp = qInt.RoL();
 
 				if (srcBase == "2")				result = (~qInt).to_bin();
 				else if (srcBase == "10")		result = (~qInt).to_dec();
@@ -114,6 +112,22 @@ void testQInt(const std::string& linkInput, const std::string& linkOutput)
 				ss >> a;
 
 				qInt = n1 << a;
+			}
+			else if (typeOperator == "ror")
+			{
+				stringstream ss(n2.to_dec());
+				uint a;
+				ss >> a;
+
+				qInt = n1.RoR(a);
+			}
+			else if (typeOperator == "rol")
+			{
+				stringstream ss(n2.to_dec());
+				uint a;
+				ss >> a;
+
+				qInt = n1.RoL(a);
 			}
 			else if (typeOperator == "==")	compareResult = n1 == n2;
 			else if (typeOperator == ">")	compareResult = n1 > n2;

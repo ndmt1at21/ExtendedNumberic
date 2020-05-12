@@ -10,7 +10,10 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	if (argc == 4)
+	QInt a(2);
+	QInt c = a.RoR(2);
+	std::string b = c.to_dec();
+	/*if (argc == 4)
 	{
 		std::string linkInput = argv[1];
 		std::string linkOutput = argv[2];
@@ -20,5 +23,5 @@ int main(int argc, char* argv[])
 			testQInt(linkInput, linkOutput);
 		else if (type == "1")
 			testQFloat(linkInput, linkOutput);
-	};
+	};*/
 }

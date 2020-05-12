@@ -165,6 +165,9 @@ QInt QInt::operator*(const QInt& rhs) const
 
 QInt QInt::operator/(const QInt& rhs) const
 {
+	if (rhs == QInt(0))
+		return QInt(0);
+
 	QInt remainder; // A
 	QInt dividend = abs(*this); // Q
 	QInt divisor = abs(rhs); // M
@@ -340,28 +343,20 @@ QInt QInt::operator<<(uint nBits) const
 	return result;
 }
 
-QInt QInt::RoL() const
+QInt QInt::RoL(uint n) const
 {
-	QInt result;
-	Bit msb = m_data.getMSB();
-	
-	result.m_data = m_data;
-	result = result << 1;
-	if (msb.isBit1())
-		result.m_data.setLSB();
+	QInt num1 = *this << n;
+	QInt num2 = *this >> (BIT_LENGTH - n);
+	QInt result = num1 | num2;
 
 	return result;
 }
 
-QInt QInt::RoR() const
+QInt QInt::RoR(uint n) const
 {
-	QInt result;
-	Bit lsb = m_data.getLSB();
-
-	result.m_data = m_data;
-	result = result >> 1;
-	if (lsb.isBit1())
-		result.m_data.setMSB();
+	QInt num1 = *this >> n;
+	QInt num2 = *this << (BIT_LENGTH - n);
+	QInt result = num1 | num2;
 
 	return result;
 }

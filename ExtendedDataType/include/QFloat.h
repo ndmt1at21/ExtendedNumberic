@@ -24,7 +24,7 @@ public:
 	QFloat(const QFloat& qFloat);
 
 	QFloat& operator=(const QFloat& qFloat);
-	std::string to_dec();
+	std::string to_dec(int precision = -1);
 	std::string to_bin();
 	std::string to_string();
 

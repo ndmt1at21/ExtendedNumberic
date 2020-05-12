@@ -10,6 +10,9 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+	QFloat a("0.3333333");
+	std::string b = a.to_dec();
+
 	if (argc == 4)
 	{
 		std::string linkInput = argv[1];

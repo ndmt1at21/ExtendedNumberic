@@ -61,7 +61,7 @@ QFloat& QFloat::operator=(const QFloat& qFloat)
 	return *this;
 }
 
-std::string QFloat::to_dec()
+std::string QFloat::to_dec(int precision)
 {
 	if (isZero())
 	{
@@ -80,6 +80,7 @@ std::string QFloat::to_dec()
 	if (isNaN())
 		return "NaN";
 
+	std::string dec;
 	if (isDenormalize())
 	{
 		std::string fraction = Convert::BinToDec(getFraction(), LIMIT_NUM);
@@ -89,7 +90,7 @@ std::string QFloat::to_dec()
 				pow2Exp = pow2Exp.div(2, LIMIT_NUM);
 
 		StringMath result = pow2Exp * StringMath(fraction);
-		std::string dec = result.getInt().to_string();
+		dec = result.getInt().to_string();
 		
 		if (result.getPosPoint() != NO_POINT)
 			dec.push_back('.');
@@ -102,10 +103,6 @@ std::string QFloat::to_dec()
 			dec += result[i];
 			countPre++;
 		}
-	
-		if (isNegative())
-			return "-" + dec;
-		return dec;
 	}
 	else
 	{
@@ -127,12 +124,26 @@ std::string QFloat::to_dec()
 		}
 
 		StringMath result = pow2Exp * (StringMath(fraction) + 1);
-		std::string dec = result.to_string();
-
-		if (isNegative())
-			return "-" + dec;
-		return dec;
+		dec = result.to_string();
 	}
+
+	std::string result;
+	if (precision <= 0)
+	{
+		result = dec;
+	}
+	else
+	{
+		uint posPoint = StringMath(dec).getPosPoint();
+		if (posPoint != NO_POINT)
+			result = dec.substr(0, posPoint + precision + 1);
+		else
+			result = dec;
+	}
+
+	if (isNegative())
+		return "-" + result;
+	return result;
 }
 
 std::string QFloat::to_bin()

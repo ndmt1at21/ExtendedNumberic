@@ -227,6 +227,64 @@ QInt& QInt::operator/=(const QInt& rhs)
 	return *this;
 }
 
+bool QInt::operator==(const QInt& rhs) const
+{
+	for (uint i = 0; i < m_data.getBitLength(); i++)
+		if (m_data.getBit(i) != rhs.m_data.getBit(i))
+			return false;
+
+	return true;
+}
+
+bool QInt::operator!=(const QInt& rhs) const
+{
+	return !(this->operator==(rhs));
+}
+
+bool QInt::operator>(const QInt& rhs) const
+{
+	if (isNegative() && rhs.isPositive())
+		return false;
+
+	if (isPositive() && rhs.isNegative())
+		return true;
+
+	for (long i = m_data.getBitLength() - 2; i >= 0; i--)
+	{
+		if (m_data.getBit(i).isBit1() && rhs.m_data.getBit(i).isBit0())
+			return true;
+	}
+
+	return false;
+}
+
+bool QInt::operator<(const QInt& rhs) const
+{
+	if (isPositive() && rhs.isNegative())
+		return false;
+
+	if (isNegative() && rhs.isPositive())
+		return true;
+
+	for (long i = m_data.getBitLength() - 2; i >= 0; i--)
+	{
+		if (m_data.getBit(i).isBit0() && rhs.m_data.getBit(i).isBit1())
+			return true;
+	}
+
+	return false;
+}
+
+bool QInt::operator>=(const QInt& rhs) const
+{
+	return !(*this < rhs);
+}
+
+bool QInt::operator<=(const QInt& rhs) const
+{
+	return !(*this > rhs);
+}
+
 QInt QInt::operator|(const QInt& rhs) const
 {
 	QInt result;

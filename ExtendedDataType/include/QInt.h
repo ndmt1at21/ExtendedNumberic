@@ -31,6 +31,13 @@ public:
 	QInt& operator*=(const QInt& rhs);
 	QInt& operator/=(const QInt& rhs);
 
+	bool operator==(const QInt& rhs) const;
+	bool operator!=(const QInt& rhs) const;
+	bool operator>(const QInt& rhs) const;
+	bool operator<(const QInt& rhs) const;
+	bool operator>=(const QInt& rhs) const;
+	bool operator<= (const QInt & rhs) const;
+
 	QInt operator|(const QInt& rhs) const;
 	QInt operator&(const QInt& rhs) const;
 	QInt operator^(const QInt& rhs) const;

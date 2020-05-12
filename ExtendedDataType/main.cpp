@@ -10,10 +10,10 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	QInt a("-0");
-	QInt b("-0");
-	QInt c = a - b;
-	std::string f = c.to_dec();
+	QInt a("7");
+	QInt b("6");
+
+	bool c = a > b;
 	/*if (argc == 4)
 	{
 		std::string linkInput = argv[1];

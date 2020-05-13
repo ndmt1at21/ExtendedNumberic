@@ -252,10 +252,15 @@ bool QInt::operator>(const QInt& rhs) const
 	if (isPositive() && rhs.isNegative())
 		return true;
 
+	if (*this == rhs)
+		return false;
+
 	for (long i = m_data.getBitLength() - 2; i >= 0; i--)
 	{
 		if (m_data.getBit(i).isBit1() && rhs.m_data.getBit(i).isBit0())
 			return true;
+		else if (m_data.getBit(i).isBit0() && rhs.m_data.getBit(i).isBit1())
+			return false;
 	}
 
 	return false;
@@ -269,9 +274,14 @@ bool QInt::operator<(const QInt& rhs) const
 	if (isNegative() && rhs.isPositive())
 		return true;
 
+	if (*this == rhs)
+		return false;
+
 	for (long i = m_data.getBitLength() - 2; i >= 0; i--)
 	{
-		if (m_data.getBit(i).isBit0() && rhs.m_data.getBit(i).isBit1())
+		if (m_data.getBit(i).isBit1() && rhs.m_data.getBit(i).isBit0())
+			return false;
+		else if (m_data.getBit(i).isBit0() && rhs.m_data.getBit(i).isBit1())
 			return true;
 	}
 

@@ -10,9 +10,13 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-	QFloat a("0.3333333");
-	std::string b = a.to_dec();
+	QInt a("0"); 
+	std::string f = a.to_bin();
 
+	QInt b("0");
+	std::string g = b.to_bin();
+
+	bool c = a >= b;
 	if (argc == 4)
 	{
 		std::string linkInput = argv[1];
